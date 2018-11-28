@@ -1,0 +1,40 @@
+{
+  "name": "zap-bond-widget",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "webpack --config webpack.prod.js",
+    "dev": "webpack-dev-server --config webpack.dev.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@zapjs/artifacts": "^2.1.2",
+    "@zapjs/dispatch": "^2.0.17",
+    "@zapjs/provider": "^2.0.18",
+    "@zapjs/registry": "^2.1.1",
+    "@zapjs/subscriber": "^2.0.14",
+    "@zapjs/types": "^2.0.9",
+    "@zapjs/zaptoken": "^2.0.15",
+    "chart.js": "^2.7.3",
+    "marked": "^0.5.2",
+    "redux": "^4.0.1",
+    "redux-thunk": "^2.3.0",
+    "truffle-hdwallet-provider": "git+https://github.com/zapproject/truffle-hdwallet-provider.git",
+    "zap-curve-chart": "git+ssh://git@git.smartum.pro:Zap/zap-oracle-curve-chart.git"
+  },
+  "devDependencies": {
+    "clean-webpack-plugin": "^0.1.19",
+    "copy-webpack-plugin": "^4.6.0",
+    "css-loader": "^1.0.1",
+    "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.4.5",
+    "style-loader": "^0.23.0",
+    "ts-loader": "^5.3.0",
+    "typescript": "^3.1.6",
+    "webpack": "^4.26.1",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.10",
+    "webpack-merge": "^4.1.4"
+  }
+}

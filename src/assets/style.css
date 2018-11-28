@@ -1,0 +1,72 @@
+.metamask-form fieldset span {
+  display: none;
+}
+.metamask-form fieldset[disabled] span {
+  display: inline;
+}
+
+.message:empty {
+  display: none;
+}
+.message {
+  position: relative;
+  padding: .75rem 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: .25rem;
+}
+.message.loading {
+  color: #0c5460;
+  background-color: #d1ecf1;
+  border-color: #bee5eb;
+}
+.message.error {
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+.message.success {
+  color: #155724;
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+}
+
+
+.provider .zap:empty,
+.provider .eth:empty,
+.provider .bound-dots:empty,
+.provider .dots-issued:empty
+.provider .zap-bound:empty
+.provider .next-dot-price:empty {
+  display: none;
+}
+
+.provider .zap::after {
+  content: ' ZAP';
+  display: inline;
+}
+.provider .eth::after {
+  content: ' ETH';
+  display: inline;
+}
+.provider .bound-dots::after {
+  content: ' DOTS';
+  display: inline;
+}
+
+.provider .dots-issued::before {
+  content: 'Dots issued: ';
+  display: inline;
+}
+.provider .zap-bound::before {
+  content: 'ZAP bound: ' ;
+  display: inline;
+}
+.provider .next-dot-price::before {
+  content: 'Dot price: ';
+  display: inline;
+}
+.provider .next-dot-price::after {
+  content: ' ZAP';
+  display: inline;
+}
