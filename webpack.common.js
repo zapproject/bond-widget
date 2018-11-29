@@ -1,14 +1,9 @@
 const path = require('path');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   performance: {
     hints: false
-  },
-  entry: {
-    index: [path.resolve(__dirname, './src/index.ts')],
   },
   resolve: {
     extensions: [".js", ".json", ".jsx", ".css", ".ts", ".tsx"],
@@ -20,12 +15,6 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin(['dist']),
-    new HtmlWebpackPlugin({
-      template: 'src/index.html'
-    }),
-    new CopyWebpackPlugin([
-      {from: 'src/assets', to: 'assets'}
-    ]),
   ],
   output: {
     path: path.resolve(__dirname, './dist'),
@@ -39,6 +28,10 @@ module.exports = {
         test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/
+      },
+      {
+        test: /\.css$/,
+        use: [ 'style-loader', 'css-loader' ]
       },
     ],
   },
