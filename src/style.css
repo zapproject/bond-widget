@@ -31,21 +31,26 @@
   border-color: #c3e6cb;
 }
 
-
-.provider .zap:empty,
-.provider .eth:empty,
-.provider .bound-dots:empty,
+.provider {
+  display: block;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  margin: 5px;
+}
+.provider .user-zap:empty,
+.provider .user-eth:empty,
+.provider .user-dots:empty,
 .provider .dots-issued:empty
 .provider .zap-bound:empty
 .provider .next-dot-price:empty {
   display: none;
 }
 
-.provider .zap::after {
+.provider .user-zap::after {
   content: ' ZAP';
   display: inline;
 }
-.provider .eth::after {
+.provider .user-eth::after {
   content: ' ETH';
   display: inline;
 }
@@ -58,8 +63,8 @@
   content: 'Dots issued: ';
   display: inline;
 }
-.provider .zap-bound::before {
-  content: 'ZAP bound: ' ;
+.provider .user-dots::before {
+  content: 'DOTs bound: ' ;
   display: inline;
 }
 .provider .next-dot-price::before {
@@ -69,4 +74,24 @@
 .provider .next-dot-price::after {
   content: ' ZAP';
   display: inline;
+}
+
+.bond-form {
+  position: relative;
+}
+
+.bond-form .login-popup {
+  display: none;
+  position: absolute;
+  transform: translateY(-100%);
+  left: 0;
+  background-color: rgba(255, 255, 255, .7)
+}
+
+.bond-form .login-popup:hover {
+  display: block;
+}
+
+.bond-form button[type="submit"]:disabled:hover + .login-popup {
+  display: block;
 }
