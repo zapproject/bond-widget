@@ -2,6 +2,7 @@ import { ZapProvider } from '@zapjs/provider';
 import { ZapSubscriber } from '@zapjs/subscriber';
 import { utf8ToHex, hexToUtf8 } from 'web3-utils';
 import { hexToAddress, isIpfsAddress } from './ipfs-utils';
+import { Curve } from '@zapjs/curve';
 
 export const networks = [
   {
@@ -117,4 +118,14 @@ export async function getProviderEndpointInfo(provider: ZapProvider, endpoint: s
     endpointMd: params[0] as string,
     endpointJson: params[1] as string,
   };
+}
+
+export function checkCurveEqual(curve: Curve, prevCurve: Curve) {
+  if (!curve) return true;
+  if (curve && !prevCurve) return false;
+  let i = curve.values.length;
+  while (i--) {
+    if (curve.values[i] !== prevCurve.values[i]) return false;
+  }
+  return true;
 }

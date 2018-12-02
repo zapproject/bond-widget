@@ -20,22 +20,22 @@ export function combineReducers(reducers) {
   };
 }
 
+export function select(selector, callback, initState = null, checkEqual = (value, prevValue) => value === prevValue) {
+  let prevValue = initState ? selector(initState) : null;
+  return state => {
+    const value = selector(state);
+    if (checkEqual(value, prevValue)) return;
+    prevValue = value;
+    callback(value);
+  }
+}
+
 export function Store(reducer) {
   let state = reducer(undefined, { type: null });
   const subscribers = [];
   function notifySubscribers() {
     let i = subscribers.length;
-    while (i--) {
-      const { callback, select, prevValue } = subscribers[i];
-      if (!select) {
-        callback(state);
-        continue;
-      }
-      const value = select(state);
-      if (prevValue === value) continue;
-      subscribers[i].prevValue = value;
-      callback(value);
-    }
+    while (i--) subscribers[i](state);
   }
   function reduce(action) {
     if (!action || !action.type) return;
@@ -52,16 +52,11 @@ export function Store(reducer) {
       reduce(action);
     }
   };
-  this.subscribe = (callback, select = null) => {
-    const prevValue = select ? select(state) : null;
-    subscribers.push({ callback, select, prevValue });
+  this.subscribe = (callback) => {
+    subscribers.push(callback);
     return () => {
-      let i = subscribers.length;
-      while (i--) {
-        if (subscribers[i].callback !== callback) continue;
-        subscribers.splice(i, 1);
-        break;
-      }
+      const i = subscribers.indexOf(callback);
+      if (i !== -1) subscribers.splice(i, 1);
     };
   };
 }

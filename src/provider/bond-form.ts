@@ -1,7 +1,7 @@
 import { Curve } from '@zapjs/curve';
 import { ZapSubscriber } from '@zapjs/subscriber';
 import { showLoading, showError, updateWidget, updateUserInfo, hideMessage } from '../store/actions';
-import { Chart } from './chart';
+import { checkCurveEqual } from '../utils';
 
 export class BondForm {
   private el: HTMLFormElement;
@@ -57,6 +57,11 @@ export class BondForm {
     this.container.appendChild(this.el);
   }
 
+  set disabled(disabled) {
+    this.bondDotsInput.disabled = disabled;
+    this.button.disabled = disabled;
+  }
+
   set dotsIssued(dots) {
     const dotsIssued = Number(dots);
     if (isNaN(dotsIssued)) return;
@@ -66,7 +71,7 @@ export class BondForm {
   }
 
   set curve(curve: Curve) {
-    if (!Chart.curveChanged(curve, this._curve)) return;
+    if (checkCurveEqual(curve, this._curve)) return;
     this._curve = curve;
     this.bondDotsInput.max = this._curve.max.toString();
     this.bondDotsInput.dispatchEvent(new Event('change'));
@@ -100,8 +105,6 @@ export class BondForm {
     if (!this._subscriber) return;
     const dots = Number(this.el.dots.value);
     this.dispatch(showLoading('Bonding ...', this.widgetID));
-    this.bondDotsInput.disabled = true;
-    this.button.disabled = true;
     try {
       await this._subscriber.bond({provider: this.providerAddress, endpoint: this.endpoint, dots});
       this.dispatch(hideMessage(this.widgetID));
@@ -109,16 +112,12 @@ export class BondForm {
       this.dispatch(updateWidget(this.widgetID));
       this.bondDotsInput.value = '1';
       this.bondDotsInput.dispatchEvent(new Event('change'));
-      this.bondDotsInput.disabled = false;
-      this.button.disabled = false;
     } catch (e) {
       console.log(e);
       this.dispatch(showError(e.message, this.widgetID));
       setTimeout(() => {
         this.dispatch(hideMessage(this.widgetID));
       }, 5000);
-      this.bondDotsInput.disabled = false;
-      this.button.disabled = false;
     }
   }
 

@@ -5,6 +5,7 @@ import { EndpointInfo } from './endpoint-info';
 import { EndpointMarkdown } from './endpoint-markdown';
 import { MessageElement } from '../shared/message';
 import { UserInfoElement } from '../shared/user-info';
+import { select } from "../store";
 
 export class Provider {
 
@@ -43,8 +44,8 @@ export class Provider {
     this.chart = new Chart(this.el);
     this.endpointMarkdown = new EndpointMarkdown(this.el);
 
-    this.unsubscribe.push(store.subscribe(this.updateWidget, state => state.widgets.find(widget => widget.id === this.widgetID)));
-    this.unsubscribe.push(store.subscribe(this.updateUserInfo, state => state.userInfo));
+    this.unsubscribe.push(store.subscribe(select(state => state.widgets.find(widget => widget.id === this.widgetID), this.updateWidget, store.state)));
+    this.unsubscribe.push(store.subscribe(select(state => state.userInfo, this.updateUserInfo, store.state)));
     container.appendChild(this.el);
   }
 
@@ -54,6 +55,7 @@ export class Provider {
   }
 
   updateWidget(widget: Widget) {
+    console.log('updateWidget', this.widgetID);
     this._widget = widget;
     if (!this._widget) return;
     this.chart.curve = this._widget.curve;
@@ -64,6 +66,7 @@ export class Provider {
     this.endpointMarkdown.markdown = this._widget.endpointMd;
     this.bondForm.curve = this._widget.curve;
     this.bondForm.dotsIssued = this._widget.dotsIssued;
+    this.bondForm.disabled = this.loading;
     this.message.message = this._widget.message;
   }
 

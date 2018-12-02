@@ -1,5 +1,6 @@
 import { CurveLineChart } from 'zap-curve-chart';
 import { Curve } from '@zapjs/curve';
+import { checkCurveEqual } from '../utils';
 
 export class Chart {
 
@@ -38,7 +39,7 @@ export class Chart {
   }
 
   set curve(curve: Curve) {
-    if (!Chart.curveChanged(curve, this._curve)) return;
+    if (checkCurveEqual(curve, this._curve)) return;
     this._curve = curve;
     this.update();
   }
@@ -54,16 +55,6 @@ export class Chart {
       this.chart.draw(this._curve.values, this._dotsIssued);
       this.updateScheduled = false;
     });
-  }
-
-  public static curveChanged(curve: Curve, prevCurve: Curve) {
-    if (!curve) return false;
-    if (curve && !prevCurve) return true;
-    let i = curve.values.length;
-    while (i--) {
-      if (curve.values[i] !== prevCurve.values[i]) return true;
-    }
-    return false;
   }
 
   private static curveToString(curve: Curve) {
