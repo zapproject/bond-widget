@@ -1,12 +1,10 @@
 import Web3 from 'web3'
-import { createStore, applyMiddleware, Store, Unsubscribe } from 'redux'
-import thunk from 'redux-thunk'
 // import { createLogin } from './login';
 import { app,  State } from './store/reducers';
-// import { createMessage } from './message';
 import { setProviderEndpoint, setWeb3, updateAccount, setNetworkId, setAccountAddress } from './store/actions';
-import { createProvider, Provider } from './provider';
+import { Provider } from './provider';
 import './style.css';
+import { Store } from './store';
 
 
 interface AppWindow extends Window {
@@ -21,13 +19,13 @@ export class ZapBondWidget {
   private interval: any;
   private store;
   private state: State;
-  private stateUnsubscribe: Unsubscribe;
+  private stateUnsubscribe;
   private providers: Provider[] = [];
 
   constructor() {
-    this.store = createStore(app, applyMiddleware(thunk));
-    this.stateUnsubscribe = this.store.subscribe(() => {
-      this.state = this.store.getState();
+    this.store = new Store(app);
+    this.stateUnsubscribe = this.store.subscribe((state) => {
+      this.state = state;
     })
     this.listenToAccountChanges = this.listenToAccountChanges.bind(this);
   }
@@ -70,7 +68,7 @@ export class ZapBondWidget {
         const widgetID = provider + endpoint;
         this.store.dispatch(setProviderEndpoint(provider, endpoint));
         // createLogin(container, this.store); // Move to the bottom of the body
-        this.providers.push(createProvider(container, this.store, provider, endpoint));
+        this.providers.push(new Provider(container, provider, endpoint, this.store));
       } catch (e) {
         console.log(e);
         container.textContent = e.message;
@@ -119,7 +117,3 @@ export class ZapBondWidget {
     }
   }
 }
-
-
-const widget = new ZapBondWidget();
-widget.init('.zap-bond-widget');

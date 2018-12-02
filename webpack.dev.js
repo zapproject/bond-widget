@@ -8,7 +8,7 @@ module.exports = merge(common, {
   mode: 'development',
   devtool: 'source-map',
   entry: {
-    index: [path.resolve(__dirname, './src/index.ts')],
+    index: [path.resolve(__dirname, './src/demo.ts')],
   },
   devServer: {
     contentBase: path.join(__dirname, 'dist'),

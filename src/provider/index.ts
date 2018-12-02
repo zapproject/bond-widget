@@ -1,5 +1,4 @@
 import { State, VIEW, Widget, UserInfo, MESSAGE_TYPE } from "../store/reducers";
-import { Unsubscribe, Store } from "redux";
 import { Chart } from './chart';
 import { BondForm } from './bond-form';
 import { EndpointInfo } from './endpoint-info';
@@ -9,7 +8,7 @@ import { UserInfoElement } from '../shared/user-info';
 
 export class Provider {
 
-  unsubscribe: Unsubscribe;
+  unsubscribe = [];
 
   private el: HTMLDivElement;
 
@@ -22,33 +21,39 @@ export class Provider {
   private endpointMarkdown: EndpointMarkdown;
   private message: MessageElement;
   private userInfoElement: UserInfoElement;
+  private widgetID
 
   constructor(
     private container: HTMLElement,
-    private endpoint,
     private providerAddress,
-    private widgetID,
-    private dispatch: (e: any) => void,
+    private endpoint,
+    private store,
   ) {
+    this.updateWidget = this.updateWidget.bind(this);
+    this.updateUserInfo = this.updateUserInfo.bind(this);
+    this.widgetID = this.providerAddress + this.endpoint;
+
     this.el = document.createElement('div');
     this.el.className = 'provider';
 
     this.message = new MessageElement(this.el);
     this.userInfoElement = new UserInfoElement(this.el, this.widgetID);
     this.endpointInfo = new EndpointInfo(this.el);
-    this.bondForm = new BondForm(this.el, this.endpoint, this.providerAddress, this.widgetID, this.dispatch);
+    this.bondForm = new BondForm(this.el, this.endpoint, this.providerAddress, this.widgetID, this.store.dispatch);
     this.chart = new Chart(this.el);
     this.endpointMarkdown = new EndpointMarkdown(this.el);
 
+    this.unsubscribe.push(store.subscribe(this.updateWidget, state => state.widgets.find(widget => widget.id === this.widgetID)));
+    this.unsubscribe.push(store.subscribe(this.updateUserInfo, state => state.userInfo));
     container.appendChild(this.el);
   }
+
 
   private get loading() {
     return this._widget.message && this._widget.message.type === MESSAGE_TYPE.LOADIG;
   }
 
-  set widget(widget: Widget) {
-    if (this._widget === widget) return;
+  updateWidget(widget: Widget) {
     this._widget = widget;
     if (!this._widget) return;
     this.chart.curve = this._widget.curve;
@@ -62,16 +67,14 @@ export class Provider {
     this.message.message = this._widget.message;
   }
 
-  set userInfo(userInfo: UserInfo) {
-    console.log('userInfo', userInfo);
-    if (this._userInfo === userInfo) return;
+  updateUserInfo(userInfo: UserInfo) {
     this._userInfo = userInfo;
     this.bondForm.subscriber = this._userInfo ? this._userInfo.subscriber : null;
     this.userInfoElement.userInfo = this._userInfo;
   }
 
   destroy() {
-    this.unsubscribe();
+    this.unsubscribe.forEach(e => { e(); });
     this.userInfoElement.destroy();
     this.message.destroy();
     this.chart.destroy();
@@ -80,16 +83,4 @@ export class Provider {
     this.bondForm.destroy();
     this.container.removeChild(this.el);
   }
-}
-
-export function createProvider(container: HTMLElement, store: Store, providerAddress: string, endpoint: string) {
-  const widgetID = providerAddress + endpoint;
-  const provider = new Provider(container, endpoint, providerAddress, widgetID, store.dispatch);
-  provider.unsubscribe = store.subscribe(() => {
-    const { widgets, userInfo } = store.getState() as State;
-    const widget = widgets.find(widget => widget.id === widgetID);
-    provider.widget = widget;
-    provider.userInfo = userInfo;
-  });
-  return provider;
 }

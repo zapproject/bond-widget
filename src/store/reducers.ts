@@ -1,8 +1,8 @@
-import { ACTIONS } from "./actions";
-import { combineReducers } from "redux";
-import { ZapSubscriber } from "@zapjs/subscriber";
-import { ZapProvider } from "@zapjs/provider/lib/src";
-import { Curve } from "@zapjs/curve/lib/src";
+import { ACTIONS } from './actions';
+import { ZapSubscriber } from '@zapjs/subscriber';
+import { ZapProvider } from '@zapjs/provider/lib/src';
+import { Curve } from '@zapjs/curve/lib/src';
+import { combineReducers } from './index';
 
 export enum MESSAGE_TYPE {
   LOADIG = 'loading',
