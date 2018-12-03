@@ -24,8 +24,8 @@ export class ZapBondWidget {
 
   constructor() {
     this.store = new Store(app);
-    this.stateUnsubscribe = this.store.subscribe((state) => {
-      this.state = state;
+    this.stateUnsubscribe = this.store.subscribe(() => {
+      this.state = this.store.getState();
     })
     this.listenToAccountChanges = this.listenToAccountChanges.bind(this);
   }
@@ -65,7 +65,6 @@ export class ZapBondWidget {
       try {
         if (!ethAddressRe.test(provider)) throw new Error('Provider address is invalid');
         if (!endpoint) throw new Error('Endpoint is required');
-        const widgetID = provider + endpoint;
         this.store.dispatch(setProviderEndpoint(provider, endpoint));
         // createLogin(container, this.store); // Move to the bottom of the body
         this.providers.push(new Provider(container, provider, endpoint, this.store));
@@ -84,9 +83,7 @@ export class ZapBondWidget {
     const { networkId, accountAddress } = this.store.getState() as State;
     const address = accounts[0] || null;
     if (networkId === netId && accountAddress === address) return;
-    this.store.dispatch(setNetworkId(netId));
-    this.store.dispatch(setAccountAddress(address));
-    this.store.dispatch(updateAccount(accountAddress, networkId));
+    this.store.dispatch(updateAccount(address, netId));
   }
 
   setProvider(provider) {

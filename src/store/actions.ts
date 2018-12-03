@@ -93,7 +93,6 @@ export const setAccountAddress = (accountAddress: string) => ({
 
 export const updateUserInfo = (prevAddress?) => async (dispatch, getState) => {
   const { web3, widgets, accountAddress, userInfo } = getState() as State;
-  console.log('accountAddress', accountAddress);
   if (!accountAddress) {
     dispatch(setUserInfo(null))
     return;
@@ -142,9 +141,11 @@ export const updateWidget = (widgetID: string, prevNetId = null) => async (dispa
 }
 
 export const updateAccount = (address = null, netId = null) => async (dispatch, getState) => {
-  const { widgets } = getState() as State;
+  const { widgets, networkId, accountAddress } = getState() as State;
+  dispatch(setNetworkId(netId));
+  dispatch(setAccountAddress(address));
   await Promise.all([
-    dispatch(updateUserInfo(address)),
-    Promise.all(widgets.map(widget => dispatch(updateWidget(widget.id, netId)))),
+    dispatch(updateUserInfo(accountAddress)),
+    Promise.all(widgets.map(widget => dispatch(updateWidget(widget.id, networkId)))),
   ]);
 }

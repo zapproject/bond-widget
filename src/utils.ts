@@ -66,7 +66,8 @@ export async function loadProvider(web3: any, owner: string): Promise<ZapProvide
 }
 
 export function getProviderParam(provider: ZapProvider, key: string): Promise<string> {
-  return provider.zapRegistry.contract.methods.getProviderParameter(provider.providerOwner, utf8ToHex(key)).call().then(decodeParam);
+  return provider.zapRegistry.contract.methods.getProviderParameter(provider.providerOwner, utf8ToHex(key)).call()
+    .then(decodeParam).catch(e => { console.log('no provider param', key); } );
 }
 
 export function decodeParam(hex: string): string {
