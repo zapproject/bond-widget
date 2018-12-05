@@ -1,31 +1,24 @@
-.metamask-form fieldset span {
+.zap-bond-widget__message:empty {
   display: none;
 }
-.metamask-form fieldset[disabled] span {
-  display: inline;
-}
-
-.message:empty {
-  display: none;
-}
-.message {
+.zap-bond-widget__message {
   position: relative;
   padding: .75rem 1.25rem;
   margin-bottom: 1rem;
   border: 1px solid transparent;
   border-radius: .25rem;
 }
-.message.loading {
+.zap-bond-widget__message.loading {
   color: #0c5460;
   background-color: #d1ecf1;
   border-color: #bee5eb;
 }
-.message.error {
+.zap-bond-widget__message.error {
   color: #721c24;
   background-color: #f8d7da;
   border-color: #f5c6cb;
 }
-.message.success {
+.zap-bond-widget__message.success {
   color: #155724;
   background-color: #d4edda;
   border-color: #c3e6cb;
@@ -94,4 +87,40 @@
 
 .bond-form button[type="submit"]:disabled:hover + .login-popup {
   display: block;
+}
+
+.zap-bond-login {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 15px;
+  width: 90%;
+  max-width: 400px;
+  box-sizing: border-box;
+  border: 1px solid #666;
+}
+
+.zap-bond-login select,
+.zap-bond-login input,
+.zap-bond-login button,
+.zap-bond-login label {
+  display: block;
+  width: 100%;
+  padding: 5px 0;
+  margin-bottom: 5px;
+}
+
+.zap-bond-login .close {
+  position: absolute;
+  font-size: 24px;
+  top: 5px;
+  right: 5px;
+  text-align: center;
+  width: 10px;
+  line-height: 10px;
+  display: block;
+  text-decoration: none;
 }

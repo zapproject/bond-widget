@@ -1,6 +1,6 @@
 import { Curve } from '@zapjs/curve';
 import { ZapSubscriber } from '@zapjs/subscriber';
-import { showLoading, showError, updateWidget, updateUserInfo, hideMessage } from '../store/actions';
+import { showLoading, showError, updateWidget, updateUserInfo, hideMessage, showLogin } from '../store/actions';
 import { checkCurveEqual } from '../utils';
 
 export class BondForm {
@@ -60,6 +60,7 @@ export class BondForm {
   set disabled(disabled) {
     this.bondDotsInput.disabled = disabled;
     this.button.disabled = disabled;
+    this.button.disabled = !this._subscriber;
   }
 
   set dotsIssued(dots) {
@@ -84,7 +85,7 @@ export class BondForm {
   }
 
   private handleShowLogin() {
-    // TODO add action
+    this.dispatch(showLogin());
   }
 
   private handleDotsChange(e) {

@@ -37,8 +37,7 @@ export function Store(reducer) {
     let i = subscribers.length;
     while (i--) subscribers[i](state);
   }
-  function reduce(action) {
-    if (!action || !action.type) return;
+  function reduce(action = {type: null}) {
     const newState = reducer(state, action);
     if (state === newState) return;
     state = newState;

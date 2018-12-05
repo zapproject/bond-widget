@@ -1,78 +1,77 @@
-import Web3 from 'web3';
-import { MetamaskLogin } from "./metamask-login";
-import { MnemonicLogin } from "./mnemonic-login";
-import { loadAccount } from '../utils';
-import { showLoading, showError, hideMessage, setView } from '../store/actions';
-import { State, VIEW } from '../store/reducers';
+import HDWalletProvider from 'truffle-hdwallet-provider';
+import { networks } from '../utils';
+import { MESSAGE_TYPE } from '../store/reducers';
+import { MessageElement } from '../shared/message';
+import { hideLogin } from '../store/actions';
 
-interface AppWindow extends Window {
-  web3: any;
-  ethereum: any;
-}
-declare const window: AppWindow;
+export class MnemonicLogin {
 
-class Login {
-  private el: HTMLDivElement;
-  private metamaskLoing: MetamaskLogin;
-  private mnemonicLoing: MnemonicLogin;
+  private el: HTMLFormElement;
+  private button: HTMLButtonElement;
+  private select: HTMLSelectElement;
+  private input: HTMLInputElement;
+  private message: MessageElement;
+  private close: HTMLAnchorElement;
 
-  private _disabled;
-
-  constructor(private container: HTMLElement, private dispatch: (e: any) => void) {
-    this.el = document.createElement('div');
-    this.el.className = 'login-form';
-    this.onLogin = this.onLogin.bind(this);
-    if (this.metamaskAvailable) this.metamaskLoing = new MetamaskLogin(this.el, this.onLogin, this.dispatch);
-    this.mnemonicLoing = new MnemonicLogin(this.el, this.onLogin, this.dispatch);
+  constructor(private container: HTMLElement, private setProvider: (e: any) => void, private dispatch: (e: any) => void) {
+    this.el = document.createElement('form');
+    this.el.className = 'zap-bond-login';
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.el.innerHTML = `
+        <label for="zap-bond-mnemonic">Mnemonic phrase</label>
+        <input placeholder="Mnemonic" type="text" name="mnemonic" id="zap-bond-mnemonic" required>
+        <select placeholder="Network" name="network" required></select>
+        <button type="submit">Login</button>
+        <a class="close" href="#">&times;</a>
+    `;
+    this.message = new MessageElement(this.el);
+    this.el.addEventListener('submit', this.handleSubmit);
+    this.button = this.el.getElementsByTagName('button')[0];
+    this.select = this.el.getElementsByTagName('select')[0];
+    this.input = this.el.getElementsByTagName('input')[0];
+    this.close = this.el.getElementsByTagName('a')[0];
+    this.handleClose = this.handleClose.bind(this);
+    this.close.addEventListener('click', this.handleClose);
+    networks.forEach(network => {
+      const option = document.createElement('option');
+      option.value = network.url;
+      option.textContent = network.name;
+      this.select.appendChild(option);
+    });
     this.container.appendChild(this.el);
   }
 
-  async onLogin(web3: Web3) {
-    try {
-      this.dispatch(showLoading('Loading acccount'));
-      const address = await loadAccount(web3);
-      this.dispatch(showLoading('Loading provider'));
-      this.dispatch(hideMessage());
-      this.dispatch(login({web3, address}));
-      this.dispatch(setView(VIEW.PROVIDER));
-    } catch (e) {
-      console.log(e);
-      this.dispatch(showError(e.message));
-    }
-  }
-
-  get metamaskAvailable() {
-    return window.ethereum || window.web3
-  }
-
   set disabled(disabled) {
-    if (this._disabled === disabled) return;
-    this._disabled = disabled;
-    if (this.metamaskLoing) this.metamaskLoing.disabled = disabled;
-    this.mnemonicLoing.disabled = disabled;
+    this.button.disabled = disabled;
+    this.input.disabled = disabled;
+    this.select.disabled = disabled;
+  }
+
+  handleClose(e) {
+    e.preventDefault();
+    this.dispatch(hideLogin());
+  }
+
+  async handleSubmit(e) {
+    e.preventDefault();
+    this.message.message = null;
+    const form = e.target as HTMLFormElement;
+    const mnemonic = form.mnemonic.value;
+    const network = form.network.value;
+    this.message.message = {type: MESSAGE_TYPE.LOADIG, text: 'Loggin in'};
+    this.disabled = true;
+    try {
+      await this.setProvider(new HDWalletProvider(mnemonic, network));
+      this.dispatch(hideLogin());
+    } catch (e) {
+      this.disabled = false;
+      this.message.message = {type: MESSAGE_TYPE.ERROR, text: e.message};
+    }
   }
 
   destroy() {
-    if (this.metamaskLoing) this.metamaskLoing.destroy();
-    this.mnemonicLoing.destroy();
+    this.close.removeEventListener('click', this.handleClose);
+    this.el.removeEventListener('submit', this.handleSubmit);
     this.container.removeChild(this.el);
   }
-}
-
-export function createLogin(container: HTMLElement, store: Store) {
-  let prevView = null;
-  let login: Login = null;
-  return store.subscribe(() => {
-    const { view, loading } = (store.getState() as State);
-    if (login) login.disabled = loading;
-    if (prevView === view) return;
-    prevView = view;
-    if (login) {
-      login.destroy();
-      login = null;
-    }
-    if (view === VIEW.LOGIN) {
-      login = new Login(container, store.dispatch);
-    }
-  });
 }

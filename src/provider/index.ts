@@ -43,8 +43,8 @@ export class Provider {
     this.bondForm = new BondForm(this.el, this.endpoint, this.providerAddress, this.widgetID, this.store.dispatch);
     this.chart = new Chart(this.el);
     this.endpointMarkdown = new EndpointMarkdown(this.el);
-    this.unsubscribe.push(store.subscribe(select(state => state.widgets.find(widget => widget.id === this.widgetID), this.updateWidget, store.state)));
-    this.unsubscribe.push(store.subscribe(select(state => state.userInfo, this.updateUserInfo, store.state)));
+    this.unsubscribe.push(store.subscribe(select(state => state.widgets.find(widget => widget.id === this.widgetID), this.updateWidget, store.getState())));
+    this.unsubscribe.push(store.subscribe(select(state => state.userInfo, this.updateUserInfo, store.getState())));
     container.appendChild(this.el);
   }
 

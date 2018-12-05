@@ -1,11 +1,10 @@
 import Web3 from 'web3'
-// import { createLogin } from './login';
 import { app,  State } from './store/reducers';
-import { setProviderEndpoint, setWeb3, updateAccount, setNetworkId, setAccountAddress } from './store/actions';
+import { setProviderEndpoint, setWeb3, updateAccount } from './store/actions';
 import { Provider } from './provider';
 import './style.css';
-import { Store } from './store';
-
+import { Store, select } from './store';
+import { MnemonicLogin } from './login';
 
 interface AppWindow extends Window {
   web3: any;
@@ -18,16 +17,13 @@ export class ZapBondWidget {
   private web3: Web3;
   private interval: any;
   private store;
-  private state: State;
-  private stateUnsubscribe;
+  private loginUnsubscribe;
   private providers: Provider[] = [];
 
   constructor() {
     this.store = new Store(app);
-    this.stateUnsubscribe = this.store.subscribe(() => {
-      this.state = this.store.getState();
-    })
     this.listenToAccountChanges = this.listenToAccountChanges.bind(this);
+    this.setProvider = this.setProvider.bind(this);
   }
 
   async init(target: string | HTMLElement | HTMLCollection | NodeList): Promise<Web3> {
@@ -45,17 +41,17 @@ export class ZapBondWidget {
     this.listenToAccountChanges();
     this.interval = setInterval(this.listenToAccountChanges, 5000);
     this.initWidgets();
+    this.initLogin();
     return web3;
   }
 
-  /* private getWidgetByID(widgetID) {
-    const widgets = this.state.widgets
-    let i = widgets.length;
-    while (i--) {
-      if (widgets[i].id === widgetID) return widgets[i];
-    }
-    return null;
-  } */
+  private initLogin() {
+    let login: MnemonicLogin;
+    this.loginUnsubscribe = this.store.subscribe(select((state: State) => state.showLogin, show => {
+      if (!show && login) login.destroy();
+      else if (show) login = new MnemonicLogin(document.getElementsByTagName('body')[0], this.setProvider, this.store.dispatch);
+    }, this.store.getState()));
+  }
 
   private initWidgets() {
     const ethAddressRe = /^0x[0-9a-fA-F]{40}$/;
@@ -66,7 +62,6 @@ export class ZapBondWidget {
         if (!ethAddressRe.test(provider)) throw new Error('Provider address is invalid');
         if (!endpoint) throw new Error('Endpoint is required');
         this.store.dispatch(setProviderEndpoint(provider, endpoint));
-        // createLogin(container, this.store); // Move to the bottom of the body
         this.providers.push(new Provider(container, provider, endpoint, this.store));
       } catch (e) {
         console.log(e);
@@ -77,8 +72,8 @@ export class ZapBondWidget {
 
   private async listenToAccountChanges() {
     const [netId, accounts] = await Promise.all([
-      await this.state.web3.eth.net.getId(),
-      await this.state.web3.eth.getAccounts(),
+      await this.store.getState().web3.eth.net.getId(),
+      await this.store.getState().web3.eth.getAccounts(),
     ]);
     const { networkId, accountAddress } = this.store.getState() as State;
     const address = accounts[0] || null;
@@ -87,12 +82,13 @@ export class ZapBondWidget {
   }
 
   setProvider(provider) {
-    this.web3.setProvider(provider);
+    this.store.getState().web3.setProvider(provider);
+    return this.listenToAccountChanges();
   }
 
   destroy() {
     if (this.interval) clearInterval(this.interval);
-    if (this.stateUnsubscribe) this.stateUnsubscribe();
+    this.loginUnsubscribe();
     this.providers.forEach(provider => { provider.destroy(); });
   }
 
