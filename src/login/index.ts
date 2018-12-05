@@ -2,9 +2,8 @@ import Web3 from 'web3';
 import { MetamaskLogin } from "./metamask-login";
 import { MnemonicLogin } from "./mnemonic-login";
 import { loadAccount } from '../utils';
-import { showLoading, login, showError, hideMessage, setView } from '../store/actions';
+import { showLoading, showError, hideMessage, setView } from '../store/actions';
 import { State, VIEW } from '../store/reducers';
-import { Store } from 'redux';
 
 interface AppWindow extends Window {
   web3: any;

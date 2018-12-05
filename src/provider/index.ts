@@ -1,216 +1,88 @@
-import { State, VIEW } from "../store/reducers";
-import { ZapSubscriber } from "@zapjs/subscriber";
-import { ZapRegistry } from "@zapjs/registry/lib/src";
-import { ZapBondage } from "@zapjs/bondage/lib/src";
-import { ZapProvider } from "@zapjs/provider/lib/src";
-import { loadProvider, loadSubscriber, getProviderEndpointInfo } from "../utils";
-import { showLoading, showError, hideMessage } from "../store/actions";
-import {CurveLineChart} from 'zap-curve-chart';
-import { Curve } from "@zapjs/curve/lib/src";
-import * as marked from 'marked';
+import { State, VIEW, Widget, UserInfo, MESSAGE_TYPE } from "../store/reducers";
+import { Chart } from './chart';
+import { BondForm } from './bond-form';
+import { EndpointInfo } from './endpoint-info';
+import { EndpointMarkdown } from './endpoint-markdown';
+import { MessageElement } from '../shared/message';
+import { UserInfoElement } from '../shared/user-info';
+import { select } from "../store";
 
-class Provider {
+export class Provider {
 
-  private _disabled = false;
-
-  private bondage: ZapBondage;
-  private registry: ZapRegistry;
-  private subscriber: ZapSubscriber;
-  private provider: ZapProvider;
-  private endpointInfo: {curve: Curve, dotsIssued, zapBound, endpointMd: string, endpointJson: string};
-
-  private chart: CurveLineChart;
-  private markdown: HTMLDivElement;
-
-  private zap: HTMLDivElement;
-  private eth: HTMLDivElement;
-  private boundDots: HTMLDivElement;
-
-  private providerName: HTMLDivElement;
-  private endpointName: HTMLDivElement;
-
-  private dotsIssued: HTMLDivElement;
-  private zapBound: HTMLDivElement;
-  private nextDotPrice: HTMLDivElement;
-  private curveValues: HTMLDivElement;
-  private curveString: HTMLDivElement;
-
-  private bondForm: HTMLFormElement;
-  private bondDotsInput: HTMLInputElement;
-  private bondDotsPrice: HTMLDivElement;
+  unsubscribe = [];
 
   private el: HTMLDivElement;
 
+  private _widget: Widget = null;
+  private _userInfo: UserInfo = null;
+
+  private bondForm: BondForm;
+  private chart: Chart;
+  private endpointInfo: EndpointInfo;
+  private endpointMarkdown: EndpointMarkdown;
+  private message: MessageElement;
+  private userInfoElement: UserInfoElement;
+  private widgetID
+
   constructor(
     private container: HTMLElement,
-    private web3,
-    private address,
     private providerAddress,
     private endpoint,
-    private dispatch: (e: any) => void
+    private store,
   ) {
-    this.handleDotsChange = this.handleDotsChange.bind(this);
-    this.handleBondDotsSubmit = this.handleBondDotsSubmit.bind(this);
+    this.updateWidget = this.updateWidget.bind(this);
+    this.updateUserInfo = this.updateUserInfo.bind(this);
+    this.widgetID = this.providerAddress + this.endpoint;
+
     this.el = document.createElement('div');
     this.el.className = 'provider';
 
-    this.zap = this.el.appendChild(document.createElement('div'));
-    this.zap.className = 'zap';
-    this.eth = this.el.appendChild(document.createElement('div'));
-    this.eth.className = 'eth';
-    this.boundDots = this.el.appendChild(document.createElement('div'));
-    this.boundDots.className = 'bound-dots';
-
-    this.providerName = this.el.appendChild(document.createElement('div'));
-    this.providerName.className = 'provider-name';
-    this.endpointName = this.el.appendChild(document.createElement('div'));
-    this.endpointName.className = 'endpoint-name';
-
-    this.dotsIssued = this.el.appendChild(document.createElement('div'));
-    this.dotsIssued.className = 'dots-issued';
-    this.zapBound = this.el.appendChild(document.createElement('div'));
-    this.zapBound.className = 'zap-bound';
-    this.nextDotPrice = this.el.appendChild(document.createElement('div'));
-    this.nextDotPrice.className = 'next-dot-price';
-
-    this.makeBondForm();
-
-    const divChart = this.el.appendChild(document.createElement('div'));
-    divChart.className = 'curve-chart';
-    this.markdown = this.el.appendChild(document.createElement('div'));
-    this.markdown.className = 'markdown-body';
-    this.chart = new CurveLineChart(divChart);
-
+    this.message = new MessageElement(this.el);
+    this.userInfoElement = new UserInfoElement(this.el, this.widgetID);
+    this.endpointInfo = new EndpointInfo(this.el);
+    this.bondForm = new BondForm(this.el, this.endpoint, this.providerAddress, this.widgetID, this.store.dispatch);
+    this.chart = new Chart(this.el);
+    this.endpointMarkdown = new EndpointMarkdown(this.el);
+    this.unsubscribe.push(store.subscribe(select(state => state.widgets.find(widget => widget.id === this.widgetID), this.updateWidget, store.state)));
+    this.unsubscribe.push(store.subscribe(select(state => state.userInfo, this.updateUserInfo, store.state)));
     container.appendChild(this.el);
-
-    this.initialize().catch(e => {
-      console.log(e);
-      this.dispatch(showError(e.message));
-    });
   }
 
-  private async initialize() {
-    this.dispatch(showLoading('Loading provider'));
-    const options = { networkId: (await this.web3.eth.net.getId()).toString(), networkProvider: this.web3.currentProvider };
-    this.registry = new ZapRegistry(options);
-    this.bondage = new ZapBondage(options);
-    this.dispatch(showLoading('Loading subscriber'));
-    const [subscriber, provider] = await Promise.all([loadSubscriber(this.web3, this.address), loadProvider(this.web3, this.providerAddress)]);
-    this.subscriber = subscriber;
-    this.provider = provider;
-    await this.provider.getTitle();
-    return Promise.all([
-      this.updateSubscriberInfo(),
-      this.updateEndpointInfo(),
-    ]);
+
+  private get loading() {
+    return this._widget.message && this._widget.message.type === MESSAGE_TYPE.LOADIG;
   }
 
-  private handleDotsChange(e) {
-    const dots = Number(e.target.value);
-    const dotsIssued = Number(this.endpointInfo.dotsIssued);
-    try {
-      this.bondDotsPrice.textContent = this.endpointInfo.curve.getZapRequired(dotsIssued, dots).toString();
-    } catch (e) {
-      console.log(e);
-      this.bondDotsInput.value = this.endpointInfo.curve.max.toString();
-      this.bondDotsPrice.textContent = this.endpointInfo.curve.getZapRequired(dotsIssued, this.endpointInfo.curve.max - dotsIssued).toString();
-    }
+  updateWidget(widget: Widget) {
+    console.log('updateWidget', this.widgetID);
+    this._widget = widget;
+    if (!this._widget) return;
+    this.chart.curve = this._widget.curve;
+    this.chart.dotsIssued = this._widget.dotsIssued;
+    this.endpointInfo.dots = this._widget.dotsIssued;
+    this.endpointInfo.endpoint = this._widget.endpoint;
+    this.endpointInfo.provider = this._widget.provider;
+    this.endpointMarkdown.markdown = this._widget.endpointMd;
+    this.bondForm.curve = this._widget.curve;
+    this.bondForm.dotsIssued = this._widget.dotsIssued;
+    this.bondForm.disabled = this.loading;
+    this.message.message = this._widget.message;
   }
 
-  private async handleBondDotsSubmit(e) {
-    e.preventDefault();
-    const dots = Number(this.bondForm.dots.value);
-    this.dispatch(showLoading('Bonding ...'));
-    try {
-      await this.subscriber.bond({provider: this.providerAddress, endpoint: this.endpoint, dots});
-      await Promise.all([
-        this.updateEndpointInfo(),
-        this.updateSubscriberInfo(),
-      ]);
-      this.bondDotsInput.value = '1';
-      this.bondDotsInput.dispatchEvent(new Event('change'));
-    } catch (e) {
-      console.log(e);
-      this.dispatch(showError(e.message));
-    }
-  }
-
-  makeBondForm() {
-    this.bondForm = document.createElement('form');
-    this.bondDotsInput = this.bondForm.appendChild(document.createElement('input'));
-    this.bondDotsInput.type = 'number';
-    this.bondDotsInput.name = 'dots';
-    this.bondDotsInput.min = '1';
-    this.bondDotsInput.addEventListener('change', this.handleDotsChange);
-    this.bondForm.addEventListener('submit', this.handleBondDotsSubmit);
-    this.bondDotsPrice = this.bondForm.appendChild(document.createElement('div'));
-    const button = this.bondForm.appendChild(document.createElement('button'));
-    button.type = 'submit';
-    button.textContent = 'Bond';
-    this.bondDotsInput.value = '1';
-    this.el.appendChild(this.bondForm);
-  }
-
-  private async updateEndpointInfo() {
-    this.dispatch(showLoading('Loading endpoint info'));
-    const endpointInfo = await getProviderEndpointInfo(this.provider, this.endpoint);
-    this.dispatch(hideMessage());
-    this.chart.draw(endpointInfo.curve.values, Number(endpointInfo.dotsIssued));
-    this.providerName.textContent = this.provider.title;
-    this.endpointName.textContent = this.endpoint;
-
-    this.dotsIssued.textContent = endpointInfo.dotsIssued.toString();
-    this.zapBound.textContent = endpointInfo.zapBound.toString();
-    this.nextDotPrice.textContent = endpointInfo.curve.getPrice(Number(endpointInfo.dotsIssued) + 1).toString();
-
-    if (endpointInfo.endpointMd && (!this.endpointInfo || endpointInfo.endpointMd !== this.endpointInfo.endpointMd)) {
-      this.markdown.innerHTML = marked(endpointInfo.endpointMd);
-    }
-    this.endpointInfo = endpointInfo;
-    this.bondDotsInput.max = this.endpointInfo.curve.max.toString();
-    this.bondDotsInput.dispatchEvent(new Event('change'));
-  }
-
-  private async updateSubscriberInfo() {
-    const [eth, zap, boundDots] = await Promise.all([
-      this.web3.eth.getBalance(this.address),
-      this.subscriber.getZapBalance(),
-      this.subscriber.getBoundDots({provider: this.providerAddress, endpoint: this.endpoint}),
-    ]);
-    this.zap.textContent = zap.toString();
-    this.eth.textContent = eth.toString();
-    this.boundDots.textContent = boundDots.toString();
-  }
-
-  set disabled(disabled) {
-    if (this._disabled === disabled) return;
-    this._disabled = disabled;
-    this.bondDotsInput.disabled = disabled;
-    this.bondForm.getElementsByTagName('button')[0].disabled = disabled;
+  updateUserInfo(userInfo: UserInfo) {
+    this._userInfo = userInfo;
+    this.bondForm.subscriber = this._userInfo ? this._userInfo.subscriber : null;
+    this.userInfoElement.userInfo = this._userInfo;
   }
 
   destroy() {
+    this.unsubscribe.forEach(e => { e(); });
+    this.userInfoElement.destroy();
+    this.message.destroy();
     this.chart.destroy();
-    this.bondDotsInput.removeEventListener('change', this.handleDotsChange);
-    this.bondForm.removeEventListener('submit', this.handleBondDotsSubmit);
+    this.endpointInfo.destroy();
+    this.endpointMarkdown.destroy();
+    this.bondForm.destroy();
     this.container.removeChild(this.el);
   }
-}
-
-export function createProvider(container: HTMLElement, store) {
-  let prevView = null;
-  let provider: Provider = null;
-  return store.subscribe(() => {
-    const { view, web3, address, loading, endpoint, providerAddress } = store.getState() as State;
-    if (provider) provider.disabled = loading;
-    if (prevView === view) return;
-    prevView = view;
-    if (provider) {
-      provider.destroy();
-      provider = null;
-    }
-    if (view === VIEW.PROVIDER) {
-      provider = new Provider(container, web3, address, providerAddress, endpoint, store.dispatch);
-    }
-  });
 }
