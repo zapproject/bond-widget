@@ -8,10 +8,6 @@ module.exports = {
   resolve: {
     extensions: [".js", ".json", ".jsx", ".css", ".ts", ".tsx"],
     mainFiles: ['index'],
-    alias: {
-      'Chart': require.resolve('chart.js'),
-      'BigNumber': require.resolve('bignumber.js'),
-    }
   },
   plugins: [
     new CleanWebpackPlugin(['dist']),
