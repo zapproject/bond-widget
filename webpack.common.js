@@ -10,10 +10,10 @@ module.exports = {
     mainFiles: ['index'],
   },
   plugins: [
-    new CleanWebpackPlugin(['dist']),
+    new CleanWebpackPlugin(['lib']),
   ],
   output: {
-    path: path.resolve(__dirname, './dist'),
+    path: path.resolve(__dirname, './lib'),
     publicPath: '/',
     chunkFilename: '[name].js',
     filename: '[name].js'

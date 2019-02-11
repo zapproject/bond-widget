@@ -1,4 +1,4 @@
-import { CurveLineChart } from 'zap-curve-chart';
+import { CurveSvgLineChart } from 'zap-curve-chart/lib/CurveSvgLineChart';
 import { Curve } from '@zapjs/curve';
 import { checkCurveEqual } from '../utils';
 
@@ -6,7 +6,7 @@ export class Chart {
 
   private el: HTMLDivElement;
   private chartEl: HTMLDivElement;
-  private chart: CurveLineChart;
+  private chart: CurveSvgLineChart;
 
   private curveValues: HTMLDivElement;
   private curveString: HTMLDivElement;
@@ -26,7 +26,7 @@ export class Chart {
 
     this.chartEl = this.el.appendChild(document.createElement('div'));
     this.chartEl.className = 'curve-chart';
-    this.chart = new CurveLineChart(this.chartEl, { maxDots: 150 });
+    this.chart = new CurveSvgLineChart(this.chartEl, { maxDots: 300, height: 150, width: 300 });
     this.container.appendChild(this.el);
   }
 

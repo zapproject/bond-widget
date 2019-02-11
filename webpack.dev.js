@@ -11,9 +11,9 @@ module.exports = merge(common, {
     index: [path.resolve(__dirname, './src/demo.ts')],
   },
   devServer: {
-    contentBase: path.join(__dirname, 'dist'),
+    contentBase: path.join(__dirname, 'lib'),
     compress: true,
-    port: 8000,
+    port: 8003,
   },
   optimization: {
     minimize: false
