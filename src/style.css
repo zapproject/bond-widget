@@ -33,6 +33,7 @@
 .provider .user-zap:empty,
 .provider .user-eth:empty,
 .provider .user-dots:empty,
+.provider .user-allowance:empty,
 .provider .dots-issued:empty
 .provider .zap-bound:empty
 .provider .next-dot-price:empty {
@@ -45,6 +46,10 @@
 }
 .provider .user-eth::after {
   content: ' ETH';
+  display: inline;
+}
+.provider .user-allowance::after {
+  content: ' ZAP approved';
   display: inline;
 }
 .provider .bound-dots::after {
@@ -87,6 +92,10 @@
 
 .bond-form button[type="submit"]:disabled:hover + .login-popup {
   display: block;
+}
+
+.bond-form .bond-dots-price::after {
+  content: ' ZAP needed'
 }
 
 .zap-bond-login {

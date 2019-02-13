@@ -1,5 +1,5 @@
 import { Curve } from '@zapjs/curve';
-import { ZapSubscriber } from '@zapjs/subscriber';
+import { UserInfo } from '../store/reducers';
 export declare class BondForm {
     private container;
     private endpoint;
@@ -13,15 +13,20 @@ export declare class BondForm {
     private loginPopup;
     private loginButton;
     private _dotsIssued;
+    private _approved;
     private _curve;
     private _subscriber;
+    private _userInfo;
     constructor(container: HTMLElement, endpoint: string, providerAddress: string, widgetID: string, dispatch: any);
     disabled: any;
     dotsIssued: any;
     curve: Curve;
-    subscriber: ZapSubscriber;
+    userInfo: UserInfo;
     private handleShowLogin;
+    private needZapApprove;
     private handleDotsChange;
+    private updateButtonTitle;
     private handleBondDotsSubmit;
+    private handleApprove;
     destroy(): void;
 }

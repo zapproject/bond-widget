@@ -67,6 +67,7 @@ const widgets = (state: Widget[] = [], action) => {
 export interface UserInfo {
   eth: any;
   zap: any;
+  allowance: any;
   dotsPerEndpoint: {widgetID: string; dots: any}[];
   subscriber: ZapSubscriber,
 }

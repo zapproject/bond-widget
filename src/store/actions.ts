@@ -103,14 +103,15 @@ export const updateUserInfo = (prevAddress?) => async (dispatch, getState) => {
       : Promise.resolve(userInfo.subscriber),
     web3.eth.getBalance(accountAddress),
   ]);
-  const [zap, dotsPerEndpoint]: [any, {widgetID: string; dots: any}[]] = await Promise.all([
+  const [zap, dotsPerEndpoint, allowance]: [any, {widgetID: string; dots: any}[], number] = await Promise.all([
     subscriber.getZapBalance(),
     Promise.all(
       widgets.map(widget => subscriber.getBoundDots({provider: widget.providerAddress, endpoint: widget.endpoint})
         .then(dots => ({widgetID: widget.id, dots})))
     ),
+    subscriber.zapToken.contract.methods.allowance(subscriber.subscriberOwner, subscriber.zapBondage.contract._address).call(),
   ]);
-  dispatch(setUserInfo({subscriber, eth, dotsPerEndpoint, zap}))
+  dispatch(setUserInfo({subscriber, eth, dotsPerEndpoint, zap, allowance}))
 }
 
 export const updateWidget = (widgetID: string, prevNetId = null) => async (dispatch, getState) => {

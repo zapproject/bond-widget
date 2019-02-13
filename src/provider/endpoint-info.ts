@@ -21,8 +21,8 @@ export class EndpointInfo {
     this.endpointTitle.className = 'endpoint-title'
     this.dotsIssued = this.el.appendChild(document.createElement('div'));
     this.dotsIssued.className = 'dots-issued'
-    this.nextDotPrice = this.el.appendChild(document.createElement('div'));
-    this.nextDotPrice.className = 'next-dot-price';
+    // this.nextDotPrice = this.el.appendChild(document.createElement('div'));
+    // this.nextDotPrice.className = 'next-dot-price';
 
     this.container.appendChild(this.el);
   }

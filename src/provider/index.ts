@@ -71,7 +71,7 @@ export class Provider {
 
   updateUserInfo(userInfo: UserInfo) {
     this._userInfo = userInfo;
-    this.bondForm.subscriber = this._userInfo ? this._userInfo.subscriber : null;
+    this.bondForm.userInfo = this._userInfo || null;
     this.userInfoElement.userInfo = this._userInfo;
   }
 

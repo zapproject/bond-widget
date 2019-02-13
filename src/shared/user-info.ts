@@ -9,6 +9,7 @@ export class UserInfoElement {
   private zap: HTMLDivElement;
   private eth: HTMLDivElement;
   private dots: HTMLDivElement;
+  private allowance: HTMLDivElement;
 
   constructor(private container: HTMLElement, private widgetID: string) {
     this.el = document.createElement('div');
@@ -21,6 +22,8 @@ export class UserInfoElement {
     this.zap.className = 'user-zap';
     this.eth = this.el.appendChild(document.createElement('div'));
     this.eth.className = 'user-eth';
+    this.allowance = this.el.appendChild(document.createElement('div'));
+    this.allowance.className = 'user-allowance';
     this.dots = this.el.appendChild(document.createElement('div'));
     this.dots.className = 'user-dots';
 
@@ -35,6 +38,7 @@ export class UserInfoElement {
     this.el.hidden = false;
     this.zap.textContent = userInfo.zap;
     this.eth.textContent = userInfo.eth;
+    this.allowance.textContent = userInfo.allowance;
     const dots = userInfo.dotsPerEndpoint.find(e => e.widgetID === this.widgetID);
     if (dots) this.dots.textContent = dots.dots;
   }

@@ -2,6 +2,8 @@ import { Curve } from '@zapjs/curve';
 import { ZapSubscriber } from '@zapjs/subscriber';
 import { showLoading, showError, updateWidget, updateUserInfo, hideMessage, showLogin } from '../store/actions';
 import { checkCurveEqual } from '../utils';
+import { UserInfo } from '../store/reducers';
+import { DEFAULT_GAS } from '@zapjs/types';
 
 export class BondForm {
   private el: HTMLFormElement;
@@ -13,8 +15,10 @@ export class BondForm {
   private loginButton: HTMLButtonElement;
 
   private _dotsIssued = 0;
+  private _approved = 0;
   private _curve: Curve;
   private _subscriber: ZapSubscriber = null;
+  private _userInfo: UserInfo = null;
 
   constructor(
     private container: HTMLElement,
@@ -78,14 +82,22 @@ export class BondForm {
     this.bondDotsInput.dispatchEvent(new Event('change'));
   }
 
-  set subscriber(subscriber: ZapSubscriber) {
-    if (this._subscriber === subscriber) return;
-    this._subscriber = subscriber;
+  set userInfo(userInfo: UserInfo) {
+    if (this._userInfo === userInfo) return;
+    this._subscriber = userInfo.subscriber;
+    this._approved = Number(userInfo.allowance);
     this.button.disabled = !this._subscriber;
+    this.updateButtonTitle();
   }
 
   private handleShowLogin() {
     this.dispatch(showLogin());
+  }
+
+  private needZapApprove() {
+    const dots = Number(this.el.dots.value) || 1;
+    const zapRequired = this._curve.getZapRequired(this._dotsIssued || 1, isNaN(dots) ? 1 : dots);
+    return zapRequired - this._approved > 0 ? zapRequired : 0;
   }
 
   private handleDotsChange(e) {
@@ -93,7 +105,9 @@ export class BondForm {
     const dots = Number(e.target.value);
     const dotsIssued = this._dotsIssued;
     try {
-      this.bondDotsPrice.textContent = this._curve.getZapRequired(dotsIssued || 1, dots).toString();
+      this.updateButtonTitle();
+      const zapRequired = this._curve.getZapRequired(dotsIssued || 1, dots);
+      this.bondDotsPrice.textContent = zapRequired.toString();
     } catch (e) {
       console.log(e);
       // this.bondDotsInput.value = this._curve.max.toString();
@@ -101,17 +115,29 @@ export class BondForm {
     }
   }
 
+  private updateButtonTitle() {
+    if (!this._curve) return;
+    const approve = this.needZapApprove();
+    this.button.textContent = approve > 0 ? 'Approve ' + approve.toString() + ' ZAP' : 'Bond';
+  }
+
   private async handleBondDotsSubmit(e) {
     e.preventDefault();
     if (!this._subscriber) return;
     const dots = Number(this.el.dots.value);
-    this.dispatch(showLoading('Bonding ...', this.widgetID));
     try {
-      await this._subscriber.bond({provider: this.providerAddress, endpoint: this.endpoint, dots});
+      const approve = this.needZapApprove();
+      if (approve > 0) {
+        this.dispatch(showLoading('Approving ...', this.widgetID));
+        await this.handleApprove(approve);
+      } else {
+        this.dispatch(showLoading('Bonding ...', this.widgetID));
+        await this._subscriber.bond({provider: this.providerAddress, endpoint: this.endpoint, dots});
+      }
       this.dispatch(hideMessage(this.widgetID));
       this.dispatch(updateUserInfo());
       this.dispatch(updateWidget(this.widgetID));
-      this.bondDotsInput.value = '1';
+      if (!approve) this.bondDotsInput.value = '1';
       this.bondDotsInput.dispatchEvent(new Event('change'));
     } catch (e) {
       console.log(e);
@@ -120,6 +146,14 @@ export class BondForm {
         this.dispatch(hideMessage(this.widgetID));
       }, 5000);
     }
+  }
+
+  private async handleApprove(zap) {
+    const txid = await this._subscriber.zapToken.contract.methods.approve(this._subscriber.zapBondage.contract._address, zap.toString()).send({
+      from: this._subscriber.subscriberOwner,
+      gas: DEFAULT_GAS,
+    });
+    return txid;
   }
 
   destroy() {

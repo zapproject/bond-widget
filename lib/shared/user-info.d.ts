@@ -8,6 +8,7 @@ export declare class UserInfoElement {
     private zap;
     private eth;
     private dots;
+    private allowance;
     constructor(container: HTMLElement, widgetID: string);
     userInfo: UserInfo;
     address: string;
