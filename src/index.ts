@@ -14,7 +14,6 @@ declare const window: AppWindow;
 
 export class ZapBondWidget {
   private containers: HTMLElement[] | HTMLCollection | NodeList;
-  private web3: Web3;
   private interval: any;
   private store;
   private loginUnsubscribe;

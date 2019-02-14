@@ -17,6 +17,14 @@ module.exports = merge(common, {
     libraryTarget: 'umd',
     umdNamedDefine: true
   },
+  externals: {
+    'zapjs': {
+      commonjs: 'zapjs',
+      commonjs2: 'zapjs',
+      amd: 'zapjs',
+      root: 'zapjs'
+    },
+  },
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {

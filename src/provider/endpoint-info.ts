@@ -1,5 +1,4 @@
-import { ZapProvider } from '@zapjs/provider';
-
+import { ZapProvider } from 'zapjs';
 export class EndpointInfo {
   private el: HTMLDivElement;
   private endpointTitle: HTMLDivElement;

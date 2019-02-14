@@ -1,8 +1,6 @@
-import { ZapProvider } from '@zapjs/provider';
-import { ZapSubscriber } from '@zapjs/subscriber';
+import { ZapProvider, ZapSubscriber, Curve } from 'zapjs';
 import { utf8ToHex, hexToUtf8 } from 'web3-utils';
 import { hexToAddress, isIpfsAddress } from './ipfs-utils';
-import { Curve } from '@zapjs/curve';
 
 export const networks = [
   {
@@ -30,14 +28,6 @@ export async function loadAccount(web3: any): Promise<string> {
 	return accounts[0];
 }
 
-export async function getProvidersWithTitles(web3, user): Promise<ZapProvider[]> {
-  const subscriber = await loadSubscriber(web3, user);
-  const providerAddresses = await subscriber.zapRegistry.getAllProviders() as string[];
-  const providers = await Promise.all(providerAddresses.map(address => loadProvider(web3, address)));
-  await Promise.all(providers.map((provider: ZapProvider) => provider.getTitle().then(() => provider)));
-  return providers;
-}
-
 export async function loadSubscriber(web3: any, owner: string): Promise<ZapSubscriber> {
   const contracts = {
     networkId: (await web3.eth.net.getId()).toString(),
@@ -46,9 +36,9 @@ export async function loadSubscriber(web3: any, owner: string): Promise<ZapSubsc
   return new ZapSubscriber(owner, contracts);
 }
 
-export async function loadProvider(web3: any, owner: string): Promise<ZapProvider> {
+export function loadProvider(web3: any, networkId: any, owner: string): ZapProvider {
   const contracts = {
-    networkId: (await web3.eth.net.getId()).toString(),
+    networkId,
     networkProvider: web3.currentProvider,
     handler: {
       handleIncoming: (data: string) => {
@@ -104,7 +94,7 @@ export function loadProviderParams(provider, endpoint) {
   ]).catch(console.error);
 }
 
-export async function getProviderEndpointInfo(provider: ZapProvider, endpoint: string) {
+export async function getProviderEndpointInfo(provider: ZapProvider, endpoint: string): Promise<any> {
   const [curve, dotsIssued, zapBound, params] = await Promise.all([
     provider.getCurve(endpoint),
     provider.getDotsIssued(endpoint),

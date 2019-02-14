@@ -1,7 +1,5 @@
 import { ACTIONS } from './actions';
-import { ZapSubscriber } from '@zapjs/subscriber';
-import { ZapProvider } from '@zapjs/provider/lib/src';
-import { Curve } from '@zapjs/curve/lib/src';
+import { ZapSubscriber, ZapProvider, Curve } from 'zapjs';
 import { combineReducers } from './index';
 
 export enum MESSAGE_TYPE {

@@ -1,5 +1,5 @@
 import { CurveSvgLineChart } from 'zap-curve-chart/lib/CurveSvgLineChart';
-import { Curve } from '@zapjs/curve';
+import { Curve } from 'zapjs';
 import { checkCurveEqual } from '../utils';
 
 export class Chart {

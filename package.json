@@ -10,16 +10,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@zapjs/artifacts": "^2.1.16",
-    "@zapjs/dispatch": "^2.0.20",
-    "@zapjs/provider": "^2.0.24",
-    "@zapjs/registry": "^2.1.4",
-    "@zapjs/subscriber": "^2.0.21",
-    "@zapjs/types": "^2.0.14",
-    "@zapjs/zaptoken": "^2.0.18",
     "marked": "^0.5.2",
     "truffle-hdwallet-provider": "git+https://github.com/zapproject/truffle-hdwallet-provider.git",
     "zap-curve-chart": "git+ssh://git@git.smartum.pro:Zap/zap-oracle-curve-chart.git"
+  },
+  "peerDependencies": {
+    "zapjs": "^1.0.15"
   },
   "devDependencies": {
     "clean-webpack-plugin": "^0.1.19",
@@ -33,6 +29,7 @@
     "webpack": "^4.29.3",
     "webpack-cli": "^3.2.3",
     "webpack-dev-server": "^3.1.14",
-    "webpack-merge": "^4.2.1"
+    "webpack-merge": "^4.2.1",
+    "zapjs": "^1.0.15"
   }
 }

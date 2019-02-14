@@ -1,4 +1,4 @@
-import { Curve } from '@zapjs/curve';
+import { Curve } from 'zapjs';
 export declare class Chart {
     private container;
     private el;

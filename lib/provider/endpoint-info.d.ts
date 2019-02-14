@@ -1,4 +1,4 @@
-import { ZapProvider } from '@zapjs/provider';
+import { ZapProvider } from 'zapjs';
 export declare class EndpointInfo {
     private container;
     private el;

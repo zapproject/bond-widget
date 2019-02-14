@@ -1,4 +1,4 @@
-import { State, VIEW, Widget, UserInfo, MESSAGE_TYPE } from "../store/reducers";
+import { Widget, UserInfo, MESSAGE_TYPE } from "../store/reducers";
 import { Chart } from './chart';
 import { BondForm } from './bond-form';
 import { EndpointInfo } from './endpoint-info';
@@ -54,7 +54,6 @@ export class Provider {
   }
 
   updateWidget(widget: Widget) {
-    console.log('updateWidget', this.widgetID);
     this._widget = widget;
     if (!this._widget) return;
     this.chart.curve = this._widget.curve;

@@ -1,4 +1,4 @@
-import { Curve } from '@zapjs/curve';
+import { Curve } from 'zapjs';
 import { UserInfo } from '../store/reducers';
 export declare class BondForm {
     private container;

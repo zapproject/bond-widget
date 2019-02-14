@@ -2,7 +2,6 @@ import Web3 from 'web3';
 import './style.css';
 export declare class ZapBondWidget {
     private containers;
-    private web3;
     private interval;
     private store;
     private loginUnsubscribe;

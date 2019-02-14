@@ -1,9 +1,7 @@
-import { Curve } from '@zapjs/curve';
-import { ZapSubscriber } from '@zapjs/subscriber';
+import { Curve, ZapSubscriber, Types } from 'zapjs';
 import { showLoading, showError, updateWidget, updateUserInfo, hideMessage, showLogin } from '../store/actions';
 import { checkCurveEqual } from '../utils';
 import { UserInfo } from '../store/reducers';
-import { DEFAULT_GAS } from '@zapjs/types';
 
 export class BondForm {
   private el: HTMLFormElement;
@@ -151,7 +149,7 @@ export class BondForm {
   private async handleApprove(zap) {
     const txid = await this._subscriber.zapToken.contract.methods.approve(this._subscriber.zapBondage.contract._address, zap.toString()).send({
       from: this._subscriber.subscriberOwner,
-      gas: DEFAULT_GAS,
+      gas: Types.DEFAULT_GAS,
     });
     return txid;
   }
