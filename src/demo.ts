@@ -1,4 +1,2 @@
-import { ZapBondWidget } from './index';
-
-const widget = new ZapBondWidget();
-widget.init('.zap-bond-widget');
+import {initWidget} from './index';
+initWidget('.zap-bond-widget');

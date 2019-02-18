@@ -1,6 +1,6 @@
 import Web3 from 'web3';
 import './style.css';
-export declare class ZapBondWidget {
+declare class ZapBondWidget {
     private containers;
     private interval;
     private store;
@@ -15,3 +15,5 @@ export declare class ZapBondWidget {
     destroy(): void;
     private getWeb3;
 }
+export declare function initWidget(target: string | HTMLElement | HTMLCollection | NodeList): ZapBondWidget;
+export {};

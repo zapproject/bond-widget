@@ -1,5 +1,5 @@
 import Web3 from 'web3'
-import { app,  State } from './store/reducers';
+import { app, State } from './store/reducers';
 import { setProviderEndpoint, setWeb3, updateAccount } from './store/actions';
 import { Provider } from './provider';
 import './style.css';
@@ -12,7 +12,7 @@ interface AppWindow extends Window {
 }
 declare const window: AppWindow;
 
-export class ZapBondWidget {
+class ZapBondWidget {
   private containers: HTMLElement[] | HTMLCollection | NodeList;
   private interval: any;
   private store;
@@ -108,4 +108,10 @@ export class ZapBondWidget {
       return new Web3(window.ethereum || window.web3 || 'wss://kovan.infura.io/ws');
     }
   }
+}
+
+export function initWidget(target: string | HTMLElement | HTMLCollection | NodeList): ZapBondWidget {
+  const widget = new ZapBondWidget();
+  widget.init(target);
+  return widget;
 }

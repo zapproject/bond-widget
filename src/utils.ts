@@ -1,6 +1,6 @@
-import { ZapProvider, ZapSubscriber, Curve } from 'zapjs';
 import { utf8ToHex, hexToUtf8 } from 'web3-utils';
 import { hexToAddress, isIpfsAddress } from './ipfs-utils';
+import { ZapProvider, Curve, ZapSubscriber } from 'zapjs';
 
 export const networks = [
   {

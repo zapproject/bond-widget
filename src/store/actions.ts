@@ -1,4 +1,4 @@
-import { MESSAGE_TYPE, VIEW, State, UserInfo, Widget } from "./reducers";
+import { MESSAGE_TYPE, VIEW, State, UserInfo } from "./reducers";
 import { loadSubscriber, loadProvider, getProviderEndpointInfo } from "../utils";
 
 export enum ACTIONS {

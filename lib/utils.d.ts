@@ -1,4 +1,4 @@
-import { ZapProvider, ZapSubscriber, Curve } from 'zapjs';
+import { ZapProvider, Curve, ZapSubscriber } from 'zapjs';
 export declare const networks: {
     name: string;
     url: string;
