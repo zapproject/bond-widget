@@ -1,0 +1,12 @@
+<form (submit)="handleSubmit($event)">
+  <fieldset [disabled]="loading">
+    <input #input type="number" name="dots" [max]="max" min="1" value="1" (input)="handleDotsChange()">
+    <div class="bond-dots-price">{{zapRequired}} ZAP needed</div>
+    <button [disabled]="!loggedIn" type="submit">{{needApprove ? 'Approve' : 'Bond'}}</button>
+    <button (click)="handleUnbond()" [disabled]="!canUnbond" type="button">Unbond</button>
+  </fieldset>
+</form>
+
+<div *ngIf="!loggedIn">
+  <p>To bond log in using your metamask extension or <button (click)="showLogin.emit()" type="button">Login with seed</button></p>
+</div>

@@ -1,0 +1,38 @@
+<zap-message *ngIf="message" [type]="message.type">{{message.text}}</zap-message>
+
+<div class="flex-row">
+  <zap-user-info
+    *ngIf="userInfo"
+    [attr.address]="userInfo.address"
+    [attr.zap]="userInfo.zap"
+    [attr.eth]="userInfo.eth"
+    [attr.approved]="userInfo.approved"
+  ></zap-user-info>
+
+  <zap-endpoint-info
+    [attr.dotsissued]="dotsIssued"
+    [attr.endpoint]="endpoint"
+    [attr.title]="title"
+    [attr.bounddots]="dotsBound"
+  ></zap-endpoint-info>
+</div>
+
+
+<zap-bond-form
+  [attr.curvevalues]="curveValuesStringified"
+  [attr.dotsissued]="dotsIssued"
+  [attr.allowance]="allowance"
+  [attr.bounddots]="dotsBound"
+  [attr.loading]="loading$ | async"
+  (unbond)="handleUnbond($event)"
+  (approve)="handleApprove($event)"
+  (bond)="handleBond($event)"
+  (showLogin)="zap.showLogin()"
+></zap-bond-form>
+
+<zap-curve-chart
+  [attr.curvevalues]="curveValuesStringified"
+  [attr.dotsissued]="dotsIssued">
+</zap-curve-chart>
+
+<zap-markdown [attr.url]="endpointMd"></zap-markdown>
