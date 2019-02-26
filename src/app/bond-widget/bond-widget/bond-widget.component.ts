@@ -119,7 +119,6 @@ export class BondWidgetComponent implements OnInit, OnChanges, OnDestroy {
       this.dotsIssued = widget.dotsIssued;
       this.title = widget.provider.title;
       this.endpointMd = widget.endpointMd;
-      console.log('widget.endpointMd', widget.endpointMd);
       this.cd.detectChanges();
     });
     this.change.next({address: this.address, endpoint: this.endpoint});

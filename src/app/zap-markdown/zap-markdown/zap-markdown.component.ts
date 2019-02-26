@@ -24,7 +24,6 @@ export class ZapMarkdownComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('this.markdown', this.url);
     if (!this.url || changes.url.previousValue === this.url) return;
     getUrlText(this.url).catch(() => '').then(text => {
       this.el.nativeElement.innerHTML = text ? marked(text) : '';
