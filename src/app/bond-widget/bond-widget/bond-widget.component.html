@@ -2,11 +2,11 @@
 
 <div class="flex-row">
   <zap-user-info
-    *ngIf="userInfo"
-    [attr.address]="userInfo.address"
-    [attr.zap]="userInfo.zap"
-    [attr.eth]="userInfo.eth"
-    [attr.approved]="userInfo.approved"
+    *ngIf="accountAddress"
+    [attr.address]="accountAddress"
+    [attr.zap]="zapBalance"
+    [attr.eth]="eth"
+    [attr.approved]="allowance"
   ></zap-user-info>
 
   <zap-endpoint-info

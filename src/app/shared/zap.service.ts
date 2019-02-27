@@ -21,62 +21,66 @@ export class ZapService {
   private web3: Web3;
 
   public account$: Observable<string>;
-  public userInfo$: Observable<{ subscriber: ZapSubscriber; eth: any; zap: any; allowance: any; }>;
+  // public userInfo$: Observable<{ subscriber: ZapSubscriber; eth: any; zap: any; allowance: any; }>;
   private triggerUpdate = new Subject<void>();
 
   private login: HTMLElement;
 
+  public allowance$: Observable<any>;
+  public subscriber$: Observable<ZapSubscriber>;
+  public balance$: Observable<any>;
+  public eth$: Observable<any>;
+
   constructor() {
     const trigger$ = this.triggerUpdate.asObservable();
-    this.getUserInfo = this.getUserInfo.bind(this);
     this.hideLogin = this.hideLogin.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
     const interal$ = merge(trigger$, of(1), interval(5000)).pipe(share());
     this.web3 = this.getWeb3();
+
     this.netId$ = interal$.pipe(
       switchMap(() => from(this.web3.eth.net.getId() as Promise<number>)),
       distinctUntilChanged(),
       shareReplay(1),
     );
+
     this.account$ = interal$.pipe(
       switchMap(() => from(this.web3.eth.getAccounts())),
       map(accounts => accounts && accounts[0] ? accounts[0] : null),
       distinctUntilChanged(),
       shareReplay(1),
     );
-    this.userInfo$ = this.account$.pipe(
-      switchMap(this.getUserInfo),
+
+    this.eth$ = interal$.pipe(
+      switchMap(() => this.account$),
+      filter(accountAddress => !!accountAddress),
+      switchMap(accountAddress => this.web3.eth.getBalance(accountAddress)),
+    );
+
+    this.subscriber$ = this.account$.pipe(
+      switchMap(accountAddress => loadSubscriber(this.web3, accountAddress)),
       shareReplay(1),
     );
-  }
 
-  private async getUserInfo(accountAddress) {
-    if (!accountAddress) return null;
-    const [subscriber, eth] = await Promise.all([
-      loadSubscriber(this.web3, accountAddress),
-      this.web3.eth.getBalance(accountAddress),
-    ]);
-    const [zap, allowance]: [any, number] = await Promise.all([
-      subscriber.getZapBalance(),
-      subscriber.zapToken.contract.methods.allowance(subscriber.subscriberOwner, subscriber.zapBondage.contract._address).call(),
-    ]);
-    return {subscriber, eth, zap, allowance};
-  }
+    this.balance$ = interal$.pipe(
+      switchMap(() => this.subscriber$),
+      switchMap(subscriber => subscriber.getZapBalance()),
+    ),
 
-  getAllowance() {
-    const noop$ = this.userInfo$.pipe(filter(userInfo => !userInfo || !userInfo.subscriber), map(() => null));
-    const dots$ = this.userInfo$.pipe(
-      filter(userInfo => !!userInfo && userInfo.subscriber instanceof ZapSubscriber),
-      map(userInfo => userInfo.allowance),
+    this.allowance$ = interal$.pipe(
+      switchMap(() => this.subscriber$),
+      switchMap(subscriber =>
+        subscriber.zapToken.contract.methods.allowance(subscriber.subscriberOwner, subscriber.zapBondage.contract._address).call()
+      ),
     );
-    return merge(noop$, dots$);
   }
 
   getBoundDots(provider, endpoint) {
-    const noop$ = this.userInfo$.pipe(filter(userInfo => !userInfo || !userInfo.subscriber), map(() => null));
-    const dots$ = this.userInfo$.pipe(
-      filter(userInfo => !!userInfo && userInfo.subscriber instanceof ZapSubscriber),
-      switchMap(userInfo => userInfo.subscriber.getBoundDots({provider, endpoint})),
+    const subscriber$ = merge(of(1), interval(5000)).pipe(switchMap(() => this.subscriber$));
+    const noop$ = subscriber$.pipe(filter(subscriber => !subscriber), map(() => null));
+    const dots$ = subscriber$.pipe(
+      filter(subscriber => !!subscriber && subscriber instanceof ZapSubscriber),
+      switchMap(subscriber => subscriber.getBoundDots({provider, endpoint})),
     );
     return merge(noop$, dots$);
   }
@@ -88,7 +92,6 @@ export class ZapService {
         Promise.all([getProviderEndpointInfo(provider, endpoint), provider.getTitle().then(() => provider)])
       )),
       map(([endpointInfo, provider]) => {
-        // console.log('endpointInfo, provider', endpointInfo, provider);
         const curve = endpointInfo.curve;
         const dotsIssued = endpointInfo.dotsIssued;
         const endpointMd = endpointInfo.endpointMd;
@@ -105,9 +108,9 @@ export class ZapService {
   }
 
   bond(provider: string, endpoint: string, dots): Observable<{result: any; error: any}> {
-    return this.userInfo$.pipe(
-      filter(userInfo => !!userInfo && userInfo.subscriber instanceof ZapSubscriber),
-      switchMap(userInfo => userInfo.subscriber.bond({provider, endpoint, dots})
+    return this.subscriber$.pipe(
+      filter(subscriber => !!subscriber && subscriber instanceof ZapSubscriber),
+      switchMap(subscriber => subscriber.bond({provider, endpoint, dots})
         .then(result => ({result, error: null}))
         .catch(error => ({error, result: null}))
       ),
@@ -115,9 +118,9 @@ export class ZapService {
   }
 
   unbond(provider: string, endpoint: string, dots): Observable<{result: any; error: any}> {
-    return this.userInfo$.pipe(
-      filter(userInfo => !!userInfo && userInfo.subscriber instanceof ZapSubscriber),
-      switchMap(userInfo => userInfo.subscriber.unBond({provider, endpoint, dots})
+    return this.subscriber$.pipe(
+      filter(subscriber => !!subscriber && subscriber instanceof ZapSubscriber),
+      switchMap(subscriber => subscriber.unBond({provider, endpoint, dots})
         .then(result => ({result, error: null}))
         .catch(error => ({error, result: null}))
       ),
@@ -125,10 +128,9 @@ export class ZapService {
   }
 
   approve(zap: number): Observable<{result: any; error: any}> {
-    return this.userInfo$.pipe(
-      filter(userInfo => !!userInfo && userInfo.subscriber instanceof ZapSubscriber),
-      switchMap(userInfo => {
-        const subscriber = userInfo.subscriber;
+    return this.subscriber$.pipe(
+      filter(subscriber => !!subscriber && subscriber instanceof ZapSubscriber),
+      switchMap(subscriber => {
         const approve: Promise<any> = subscriber.zapToken.contract.methods.approve(
           subscriber.zapBondage.contract._address, zap.toString()
         ).send({

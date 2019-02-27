@@ -14,18 +14,19 @@ export class BondWidgetComponent implements OnInit, OnChanges, OnDestroy {
   @Input() endpoint: string;
 
   curveValuesStringified: string;
-  dotsIssued: any;
   title;
+  dotsIssued: any;
+  zapBalance: any;
   dotsBound: any;
+  eth: any;
+  accountAddress: any;
   allowance: any = null;
   private action = new Subject<{type: 'BOND' | 'UNBOND' | 'APPROVE', payload: number}>();
-  private change = new Subject<{address: string; endpoint: string}>();
+  private change = new Subject<void>();
   change$ = this.change.asObservable().pipe(shareReplay(1));
 
   loading$: Observable<boolean>;
   endpointMd: string;
-
-  userInfo = null;
 
   subscriptions = [];
 
@@ -37,28 +38,27 @@ export class BondWidgetComponent implements OnInit, OnChanges, OnDestroy {
   ) {}
 
   ngOnInit() {
-    const change$ = merge(this.change$, of({endpoint: this.endpoint, address: this.address}));
-    this.subscriptions.push(change$.pipe(switchMap(e => this.zap.getBoundDots(e.address, e.endpoint))).subscribe(dots => {
+    const change$ = merge(this.change$, of(1));
+    this.subscriptions.push(change$.pipe(switchMap(e => this.zap.getBoundDots(this.address, this.endpoint))).subscribe(dots => {
       this.dotsBound = dots;
       this.cd.detectChanges();
     }));
-    this.subscriptions.push(change$.pipe(switchMap(e => this.zap.getAllowance())).subscribe(allowance => {
+    this.subscriptions.push(this.zap.allowance$.subscribe(allowance => {
       this.allowance = allowance;
       this.cd.detectChanges();
     }));
 
-    this.subscriptions.push(this.zap.userInfo$.subscribe(userInfo => {
-      if (!userInfo) {
-        this.userInfo = null;
-        this.cd.detectChanges();
-        return;
-      }
-      this.userInfo = {
-        zap: userInfo.zap,
-        eth: userInfo.eth,
-        approved: userInfo.allowance,
-        address: userInfo.subscriber.subscriberOwner,
-      };
+    this.subscriptions.push(this.zap.subscriber$.subscribe(subscriber => {
+      this.accountAddress = subscriber.subscriberOwner;
+      this.cd.detectChanges();
+    }));
+
+    this.subscriptions.push(this.zap.balance$.subscribe(zap => {
+      this.zapBalance = zap;
+      this.cd.detectChanges();
+    }));
+    this.subscriptions.push(this.zap.eth$.subscribe(eth => {
+      this.eth = eth;
       this.cd.detectChanges();
     }));
 
@@ -93,7 +93,10 @@ export class BondWidgetComponent implements OnInit, OnChanges, OnDestroy {
     const success$ = merge(bond$, unbond$, approve$).pipe(
       filter(response => !response.error),
       map(({result}) => result),
-      tap(() => { this.handleMessage({text: 'Done!', type: 'SUCCESS'}); }),
+      tap(() => {
+        this.change.next();
+        this.handleMessage({text: 'Done!', type: 'SUCCESS'});
+      }),
     );
     this.loading$ = merge(
       action$.pipe(map(() => true)),
@@ -121,7 +124,7 @@ export class BondWidgetComponent implements OnInit, OnChanges, OnDestroy {
       this.endpointMd = widget.endpointMd;
       this.cd.detectChanges();
     });
-    this.change.next({address: this.address, endpoint: this.endpoint});
+    this.change.next();
   }
 
   ngOnDestroy() {
