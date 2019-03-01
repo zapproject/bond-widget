@@ -5,7 +5,7 @@ import { createCustomElement } from '@angular/elements';
 
 @NgModule({
   declarations: [
-    ZapMessageComponent
+    ZapMessageComponent,
   ],
   imports: [
     CommonModule

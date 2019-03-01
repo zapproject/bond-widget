@@ -2,13 +2,15 @@ import { NgModule, Injector } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ZapUserInfoComponent } from './zap-user-info/zap-user-info.component';
 import { createCustomElement } from '@angular/elements';
+import { FormatPriceModule } from '../format-price/format-price.module';
 
 @NgModule({
   declarations: [
     ZapUserInfoComponent,
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    FormatPriceModule,
   ],
   entryComponents: [
     ZapUserInfoComponent,

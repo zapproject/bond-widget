@@ -1,6 +1,6 @@
 import { Component, ViewEncapsulation, Input, OnChanges, ChangeDetectorRef, OnDestroy, OnInit } from '@angular/core';
 import { ZapService } from 'src/app/shared/zap.service';
-import { filter, take, switchMap, share, map, shareReplay, tap,  } from 'rxjs/operators';
+import { filter, take, switchMap, share, map, shareReplay, tap } from 'rxjs/operators';
 import { Subject, merge, of, Observable } from 'rxjs';
 
 @Component({
