@@ -49,7 +49,7 @@ export class BondWidgetComponent implements OnInit, OnChanges, OnDestroy {
     }));
 
     this.subscriptions.push(this.zap.subscriber$.subscribe(subscriber => {
-      this.accountAddress = subscriber.subscriberOwner;
+      this.accountAddress = subscriber ? subscriber.subscriberOwner : '';
       this.cd.detectChanges();
     }));
 

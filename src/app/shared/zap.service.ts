@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SharedModule } from './shared.module';
 import { Observable, from, merge, interval, of, Subject } from 'rxjs';
-import { map, shareReplay, switchMap, filter, startWith, share, tap, distinctUntilChanged, take } from 'rxjs/operators';
+import { map, shareReplay, switchMap, filter, share, distinctUntilChanged, take } from 'rxjs/operators';
 import Web3 from 'web3';
 import { loadProvider, getProviderEndpointInfo, loadSubscriber } from './utils';
 import { ZapSubscriber, Types } from 'zapjs';
@@ -35,42 +35,45 @@ export class ZapService {
     const trigger$ = this.triggerUpdate.asObservable();
     this.hideLogin = this.hideLogin.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
-    const interal$ = merge(trigger$, of(1), interval(5000)).pipe(share());
+    const interval$ = merge(trigger$, of(1), interval(5000)).pipe(share());
     this.web3 = this.getWeb3();
 
-    this.netId$ = interal$.pipe(
+    this.netId$ = interval$.pipe(
       switchMap(() => from(this.web3.eth.net.getId() as Promise<number>)),
       distinctUntilChanged(),
       shareReplay(1),
     );
 
-    this.account$ = interal$.pipe(
+    this.account$ = interval$.pipe(
       switchMap(() => from(this.web3.eth.getAccounts())),
       map(accounts => accounts && accounts[0] ? accounts[0] : null),
       distinctUntilChanged(),
       shareReplay(1),
     );
 
-    this.eth$ = interal$.pipe(
+    this.eth$ = interval$.pipe(
       switchMap(() => this.account$),
       filter(accountAddress => !!accountAddress),
       switchMap(accountAddress => this.web3.eth.getBalance(accountAddress)),
     );
 
     this.subscriber$ = this.account$.pipe(
-      switchMap(accountAddress => loadSubscriber(this.web3, accountAddress)),
+      switchMap(accountAddress => accountAddress ? loadSubscriber(this.web3, accountAddress) : of(null)),
+      distinctUntilChanged(),
       shareReplay(1),
     );
 
-    this.balance$ = interal$.pipe(
+    this.balance$ = interval$.pipe(
       switchMap(() => this.subscriber$),
-      switchMap(subscriber => subscriber.getZapBalance()),
+      switchMap(subscriber => subscriber ? subscriber.getZapBalance() : of(null)),
     ),
 
-    this.allowance$ = interal$.pipe(
+    this.allowance$ = interval$.pipe(
       switchMap(() => this.subscriber$),
       switchMap(subscriber =>
-        subscriber.zapToken.contract.methods.allowance(subscriber.subscriberOwner, subscriber.zapBondage.contract._address).call()
+        subscriber
+        ? subscriber.zapToken.contract.methods.allowance(subscriber.subscriberOwner, subscriber.zapBondage.contract._address).call()
+        : of(null)
       ),
     );
   }
