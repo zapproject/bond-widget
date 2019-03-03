@@ -1,0 +1,16 @@
+<div class="zap-login-popup">
+  <form (submit)="handleLogin($event)" class="zap-bond-login">
+    <zap-message>{{message}}</zap-message>
+    <fieldset [disabled]="disabled">
+      <label>Mnemonic phrase</label>
+      <input placeholder="Mnemonic" type="text" name="mnemonic" required>
+      <select placeholder="Network" name="network" required>
+        <option *ngFor="let option of networks" [value]="option.url">
+          {{option.name}}
+        </option>
+      </select>
+      <button type="submit">Login</button>
+    </fieldset>
+    <button type="button" class="close" (click)="close.emit()">&times;</button>
+  </form>
+</div>
