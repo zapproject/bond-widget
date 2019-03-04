@@ -25,10 +25,10 @@
     "github-markdown-css": "^3.0.1",
     "marked": "^0.5.2",
     "rxjs": "~6.4.0",
-    "zap-curve-chart": "git+https://github.com/zapproject/zap-curve-chart.git",
     "truffle-hdwallet-provider": "git+https://github.com/zapproject/truffle-hdwallet-provider.git",
     "web3": "1.0.0-beta.36",
     "web3-utils": "1.0.0-beta.36",
+    "zap-curve-chart": "git+https://github.com/zapproject/zap-curve-chart.git",
     "zapjs": "^1.0.16",
     "zone.js": "^0.8.29"
   },
