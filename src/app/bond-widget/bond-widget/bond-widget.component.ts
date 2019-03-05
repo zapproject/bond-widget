@@ -30,7 +30,9 @@ export class BondWidgetComponent implements OnInit, OnChanges, OnDestroy {
 
   subscriptions = [];
 
-  message: {type?: 'ERROR' | 'SUCCESS'; text: string} = null;
+  message: {type?: 'ERROR' | 'SUCCESS'; text: string, tx?: any} = null;
+
+  netid;
 
   constructor(
     public zap: ZapService,
@@ -39,6 +41,7 @@ export class BondWidgetComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit() {
     const change$ = merge(this.change$, of(1));
+    this.subscriptions.push(this.zap.netId$.subscribe(netid => { this.netid = netid; }))
     this.subscriptions.push(change$.pipe(switchMap(e => this.zap.getBoundDots(this.address, this.endpoint))).subscribe(dots => {
       this.dotsBound = dots;
       this.cd.detectChanges();
@@ -93,9 +96,10 @@ export class BondWidgetComponent implements OnInit, OnChanges, OnDestroy {
     const success$ = merge(bond$, unbond$, approve$).pipe(
       filter(response => !response.error),
       map(({result}) => result),
-      tap(() => {
+      tap((result) => {
+        console.log('result', result);
         this.change.next();
-        this.handleMessage({text: 'Done!', type: 'SUCCESS'});
+        this.handleMessage({text: 'Done!', type: 'SUCCESS', tx: result.transactionHash});
       }),
     );
     this.loading$ = merge(

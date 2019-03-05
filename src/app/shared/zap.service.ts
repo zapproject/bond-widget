@@ -17,11 +17,10 @@ declare const window: AppWindow;
 })
 export class ZapService {
 
-  private netId$: Observable<number>;
+  public netId$: Observable<number>;
   private web3: Web3;
 
   public account$: Observable<string>;
-  // public userInfo$: Observable<{ subscriber: ZapSubscriber; eth: any; zap: any; allowance: any; }>;
   private triggerUpdate = new Subject<void>();
 
   private login: HTMLElement;

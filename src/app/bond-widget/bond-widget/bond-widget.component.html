@@ -1,4 +1,7 @@
-<zap-message *ngIf="message" [type]="message.type">{{message.text}}</zap-message>
+<zap-message *ngIf="message" [type]="message.type">
+  {{message.text}}
+  <zap-transaction-info *ngIf="message.tx" [attr.netid]="netid" [attr.tx]="message.tx"></zap-transaction-info>
+</zap-message>
 
 <div class="flex-row">
   <zap-user-info
