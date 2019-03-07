@@ -102,10 +102,14 @@ export class BondFormComponent implements OnChanges, AfterViewInit {
     this.unbond.emit(this.dots);
   }
 
+  handleApprove() {
+    if (this.dots < 1) return;
+    this.approve.emit(this.zapRequired);
+  }
+
   handleSubmit(e) {
     e.preventDefault();
     if (this.needApprove) {
-      this.approve.emit(this.zapRequired);
       return;
     }
     if (this.dots > 0) {

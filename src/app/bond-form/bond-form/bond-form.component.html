@@ -2,7 +2,7 @@
   <fieldset [disabled]="loading || !loggedIn">
     <input #input type="number" name="dots" [max]="max" min="1" value="1" (input)="handleDotsChange()">
     <div class="bond-dots-price">{{zapRequired | formatPrice}} ZAP needed</div>
-    <button type="button">Approve</button>
+    <button (click)="handleApprove()" type="button">Approve</button>
     <button [disabled]="needApprove" type="submit">Bond</button>
     <button (click)="handleUnbond()" [disabled]="!canUnbond" type="button">Unbond</button>
   </fieldset>
