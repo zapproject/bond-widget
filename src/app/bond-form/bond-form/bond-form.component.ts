@@ -59,6 +59,7 @@ export class BondFormComponent implements OnChanges, AfterViewInit {
     if (changes.allowance && changes.allowance.currentValue !== changes.allowance.previousValue) {
       this.loggedIn = !!this.allowance || this.allowance === '0';
       this.approved = Number(changes.allowance.currentValue);
+      this.updateValues();
     }
     if (changes.bounddots && changes.bounddots.currentValue !== changes.bounddots.previousValue) {
       this.boundedDots = Number(changes.bounddots.currentValue);
