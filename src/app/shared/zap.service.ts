@@ -3,7 +3,7 @@ import { SharedModule } from './shared.module';
 import { Observable, from, merge, interval, of, Subject } from 'rxjs';
 import { map, shareReplay, switchMap, filter, share, distinctUntilChanged, take } from 'rxjs/operators';
 import Web3 from 'web3';
-import { toBN } from 'web3-utils';
+import BigNumber from 'bignumber.js';
 import { loadProvider, getProviderEndpointInfo, loadSubscriber } from './utils';
 import { ZapSubscriber, Types } from 'zapjs';
 
@@ -135,7 +135,7 @@ export class ZapService {
       filter(subscriber => !!subscriber && subscriber instanceof ZapSubscriber),
       switchMap(subscriber => {
         const approve: Promise<any> = subscriber.zapToken.contract.methods.approve(
-          subscriber.zapBondage.contract._address, toBN(zap).toString(),
+          subscriber.zapBondage.contract._address, (new BigNumber(zap)).toFixed(),
         ).send({
           from: subscriber.subscriberOwner,
           gas: Types.DEFAULT_GAS,
