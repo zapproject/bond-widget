@@ -26,6 +26,7 @@ export class BondFormComponent implements OnChanges, AfterViewInit {
   @Input() allowance: string;
   @Input() bounddots: string;
   @Input() loading: any;
+  @Input() interface: "standard" | "bond" = "standard";
 
   @Output() unbond = new EventEmitter<number>();
   @Output() approve = new EventEmitter<number>();
@@ -53,8 +54,12 @@ export class BondFormComponent implements OnChanges, AfterViewInit {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.curvevalues && changes.curvevalues.currentValue !== changes.curvevalues.previousValue) {
-      this.curve = new Curve(JSON.parse(changes.curvevalues.currentValue));
-      this.updateValues();
+      try {
+        this.curve = new Curve(JSON.parse(changes.curvevalues.currentValue));
+        this.updateValues();
+      } catch (e) {
+        console.log('Error parse', changes.curvevalues.currentValue);
+      }
     }
     if (changes.allowance && changes.allowance.currentValue !== changes.allowance.previousValue) {
       this.loggedIn = !!this.allowance || this.allowance === '0';

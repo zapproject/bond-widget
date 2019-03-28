@@ -36,8 +36,8 @@ export async function loadSubscriber(web3: any, owner: string): Promise<ZapSubsc
   return new ZapSubscriber(owner, contracts);
 }
 
-export function loadProvider(web3: any, networkId: any, owner: string): ZapProvider {
-  const contracts = {
+export function getNetworkOptions(web3: any, networkId: any) {
+  return {
     networkId,
     networkProvider: web3.currentProvider,
     handler: {
@@ -52,7 +52,10 @@ export function loadProvider(web3: any, networkId: any, owner: string): ZapProvi
       },
     },
   };
-  return new ZapProvider(owner, contracts);
+}
+
+export function loadProvider(web3: any, networkId: any, owner: string): ZapProvider {
+  return new ZapProvider(owner, getNetworkOptions(web3, networkId));
 }
 
 export function getProviderParam(provider: ZapProvider, key: string): Promise<string> {
@@ -89,7 +92,7 @@ export function formatJSON(json: string, tab = 4): string {
   return JSON.stringify(JSON.parse(json), null, tab);
 }
 
-export function loadProviderParams(provider, endpoint) {
+export function loadProviderParams(provider: ZapProvider, endpoint: string): Promise<void | string[]> {
   return Promise.all([
     getProviderParam(provider, endpoint + '.md')/* .then(getUrlText) */.catch(e => { console.log(e); return ''; }),
     getProviderParam(provider, endpoint + '.json')/* .then(getUrlText) */.catch(e => { console.log(e); return ''; }),
@@ -103,7 +106,6 @@ export async function getProviderEndpointInfo(provider: ZapProvider, endpoint: s
     provider.getZapBound(endpoint),
     loadProviderParams(provider, endpoint),
   ]);
-  console.log('params', params);
   if (!curve.values.length) throw new Error('Unable to find the endpoint.');
   return {
     curve,
@@ -128,4 +130,35 @@ export function formatPrice(wei: number): string {
   if (wei >= 1e16) return Math.round(wei / 1e15) / 1e3 + '';
   if (wei >= 1e6) return Math.round(wei / 1e6) / 1e3 + ' gwei';
   return wei + ' wei';
+}
+
+function splitCurveToTurms(curve: number[]): number[][] {
+	if (curve.length <= 0) return [];
+	const res = [];
+	let startIndex = 0;
+	let currentLength = curve[0];
+	let endIndex = currentLength + 2;
+	while (startIndex < curve.length) {
+		res.push(curve.slice(startIndex, endIndex));
+		startIndex += currentLength + 2;
+		currentLength = curve[endIndex];
+		endIndex = startIndex + currentLength + 2;
+	}
+	return res;
+}
+export function termToString(term: number[]): string {
+	const limit = term[term.length - 1];
+	const parts = [];
+	for (let i = 1; i <= term[0]; i++) {
+		if (term[i] === 0) continue;
+		if (term[i] === 1) {
+			parts.push('x^' + (i - 1));
+		} else {
+			parts.push(term[i] + '*' + 'x^' + (i - 1));
+		}
+	}
+	return parts.join('+') + '; limit = ' + limit;
+}
+export function curveToString(values: number[]): string {
+	return splitCurveToTurms(values).map(term => termToString(term)).join(' & ');
 }

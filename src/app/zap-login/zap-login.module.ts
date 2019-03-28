@@ -2,13 +2,15 @@ import { NgModule, Injector, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ZapLoginComponent } from './zap-login/zap-login.component';
 import { createCustomElement } from '@angular/elements';
+import { SubscriberModule } from '../subscriber-service/subscriber-service.module';
 
 @NgModule({
   declarations: [
     ZapLoginComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    SubscriberModule,
   ],
   entryComponents: [
     ZapLoginComponent

@@ -8,6 +8,7 @@ import { BondWidgetModule } from './bond-widget/bond-widget.module';
 import { ZapUserInfoModule } from './zap-user-info/zap-user-info.module';
 import { ZapMarkdownModule } from './zap-markdown/zap-markdown.module';
 import { TransactionInfoModule } from './transaction-info/transaction-info.module';
+import { TokenBondWidgetModule } from './token-bond-widget/token-bond-widget.module';
 
 
 @NgModule({
@@ -23,6 +24,7 @@ import { TransactionInfoModule } from './transaction-info/transaction-info.modul
     ZapUserInfoModule,
     ZapMarkdownModule,
     TransactionInfoModule,
+    TokenBondWidgetModule,
   ],
 })
 export class AppModule {

@@ -4,7 +4,7 @@
   "main": "lib/zap-bond-widget.js",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --aot --extraWebpackConfig webpack.extra.js",
+    "start": "ng serve --extraWebpackConfig webpack.extra.js",
     "dev": "npm start",
     "build": "ng build zap-elements --extraWebpackConfig webpack.extra.js --stats-json --prod && cat dist/zap-elements/runtime.js dist/zap-elements/scripts.js dist/zap-elements/main.js > lib/zap-bond-widget.js",
     "test": "ng test",
@@ -26,9 +26,9 @@
     "marked": "^0.5.2",
     "rxjs": "~6.4.0",
     "truffle-hdwallet-provider": "git+https://github.com/zapproject/truffle-hdwallet-provider.git",
+    "zap-curve-chart": "git+https://github.com/zapproject/zap-curve-chart.git",
     "web3": "1.0.0-beta.36",
     "web3-utils": "1.0.0-beta.36",
-    "zap-curve-chart": "git+https://github.com/zapproject/zap-curve-chart.git",
     "zapjs": "^1.0.16",
     "zone.js": "^0.8.29",
     "bignumber.js": "^7.2.1"

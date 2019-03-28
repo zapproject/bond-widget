@@ -5,7 +5,7 @@ import 'github-markdown-css';
 @Component({
   templateUrl: './zap-markdown.component.html',
   styleUrls: [
-    '/node_modules/github-markdown-css/github-markdown.css',
+    '../../../../node_modules/github-markdown-css/github-markdown.css',
     './zap-markdown.component.css',
   ],
   encapsulation: ViewEncapsulation.Emulated

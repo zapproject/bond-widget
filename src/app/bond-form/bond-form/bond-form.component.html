@@ -4,7 +4,7 @@
     <div class="bond-dots-price">{{zapRequired | formatPrice}} ZAP needed</div>
     <button (click)="handleApprove()" type="button">Approve</button>
     <button [disabled]="needApprove" type="submit">Bond</button>
-    <button (click)="handleUnbond()" [disabled]="!canUnbond" type="button">Unbond</button>
+    <button *ngIf="interface === 'standard'" (click)="handleUnbond()" [disabled]="!canUnbond" type="button">Unbond</button>
   </fieldset>
 </form>
 

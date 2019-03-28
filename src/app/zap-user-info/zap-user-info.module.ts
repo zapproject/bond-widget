@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ZapUserInfoComponent } from './zap-user-info/zap-user-info.component';
 import { createCustomElement } from '@angular/elements';
 import { FormatPriceModule } from '../format-price/format-price.module';
+import { SubscriberModule } from '../subscriber-service/subscriber-service.module';
 
 @NgModule({
   declarations: [
@@ -11,6 +12,7 @@ import { FormatPriceModule } from '../format-price/format-price.module';
   imports: [
     CommonModule,
     FormatPriceModule,
+    SubscriberModule,
   ],
   entryComponents: [
     ZapUserInfoComponent,

@@ -2,13 +2,15 @@ import { NgModule, Injector } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EndpointInfoComponent } from './endpoint-info/endpoint-info.component';
 import { createCustomElement } from '@angular/elements';
+import { ProviderServiceModule } from '../provider-service/provider-service.module';
 
 @NgModule({
   declarations: [
     EndpointInfoComponent,
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    ProviderServiceModule,
   ],
   entryComponents: [
     EndpointInfoComponent,
