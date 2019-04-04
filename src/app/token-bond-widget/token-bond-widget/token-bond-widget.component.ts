@@ -16,7 +16,7 @@ export class TokenBondWidgetComponent implements OnInit {
 
   @Input() address: string;
   @Input() endpoint: string;
-  @Input() interface: "standard" | "bond" = "bond";
+  @Input() interface: 'standard' | 'bond' = 'standard';
 
   curveValuesStringified: string;
   title;
@@ -26,7 +26,7 @@ export class TokenBondWidgetComponent implements OnInit {
   eth: any;
   accountAddress: any;
   allowance: any = null;
-  private action = new Subject<{type: 'BOND' | 'UNBOND' | 'APPROVE'; payload: number; tokenDotFactory?: TokenDotFactory}>();
+  private action = new Subject<{type: 'BOND' | 'UNBOND' | 'APPROVE' | 'APPROVE_BURN'; payload: number; tokenDotFactory?: TokenDotFactory}>();
   private change = new Subject<void>();
 
   loading$: Observable<boolean>;
@@ -42,12 +42,12 @@ export class TokenBondWidgetComponent implements OnInit {
   tokenDotFactory$: Observable<TokenDotFactory>;
 
   public viewData = {
-    title: "",
-    curvevalues: "",
-    dotsissued: "",
-    allowance: "",
-    bounddots: "",
-    endpointMd: "",
+    title: '',
+    curvevalues: '',
+    dotsissued: '',
+    allowance: '',
+    bounddots: '',
+    endpointMd: '',
   };
 
   constructor(
@@ -117,14 +117,20 @@ export class TokenBondWidgetComponent implements OnInit {
       switchMap(({payload, tokenDotFactory}) => this.bond.approve(tokenDotFactory, payload)),
       share(),
     );
-    const error$ = merge(bond$, unbond$, approve$).pipe(
+    const approveBurn$ = action$.pipe(
+      filter(({type}) => type === 'APPROVE_BURN'),
+      tap(() => { this.handleMessage({text: 'Approving...'}); }),
+      switchMap(({payload, tokenDotFactory}) => this.bond.approveBurn(tokenDotFactory, this.endpoint, payload)),
+      share(),
+    );
+    const error$ = merge(bond$, unbond$, approve$, approveBurn$).pipe(
       filter(response => !!response.error),
       map(({error}) => error),
       tap(error => {
         this.handleMessage({text: error.message, type: 'ERROR'});
       }),
     );
-    const success$ = merge(bond$, unbond$, approve$).pipe(
+    const success$ = merge(bond$, unbond$, approve$, approveBurn$).pipe(
       filter(response => !response.error),
       map(({result}) => result),
       tap((result) => {
@@ -167,6 +173,9 @@ export class TokenBondWidgetComponent implements OnInit {
 
   handleApprove(e: CustomEvent) {
     this.action.next({type: 'APPROVE', payload: e.detail});
+  }
+  handleApproveBurn(e: CustomEvent) {
+    this.action.next({type: 'APPROVE_BURN', payload: e.detail});
   }
 
 }

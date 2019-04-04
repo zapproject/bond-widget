@@ -1,6 +1,6 @@
-import { Observable, interval, merge, of } from 'rxjs';
-import { switchMap, filter, map } from 'rxjs/operators';
-import { ZapSubscriber, Types, TokenDotFactory } from 'zapjs';
+import { Observable, interval, merge, of, from } from 'rxjs';
+import { switchMap, filter, map, withLatestFrom } from 'rxjs/operators';
+import { ZapSubscriber, Types, TokenDotFactory, Artifacts } from 'zapjs';
 import BigNumber from 'bignumber.js';
 import { Injectable } from '@angular/core';
 import { TokenServiceModule } from './token-service.module';
@@ -79,6 +79,27 @@ export class BondTokenService {
         return approve
           .then(result => ({result, error: null}))
           .catch(error => ({error, result: null}));
+      }),
+    );
+  }
+
+  approveBurn(tokenDotFactory: TokenDotFactory, endpoint: string, dots: number) {
+    const tokenAddressPromise = tokenDotFactory.getDotAddress({specifier: endpoint});
+    return from(tokenAddressPromise).pipe(
+      withLatestFrom(this.subscriber$.pipe(filter(subscriber => !!subscriber && subscriber instanceof ZapSubscriber))),
+      switchMap(([tokenAddress, subscriber]) => {
+        const dotToken = new tokenDotFactory.provider.eth.Contract(Artifacts['ZAP_TOKEN'].abi, tokenAddress);
+        return (new Promise((resolve, reject) => {
+          dotToken.methods.approve(tokenDotFactory.contract._address, dots).send({
+            from: subscriber.subscriberOwner,
+            gas: Types.DEFAULT_GAS,
+          })
+          .on('transactionHash', transactionHash => resolve({transactionHash}))
+          .then(resolve)
+          .catch(reject)
+        }))
+        .then(result => ({result, error: null}))
+        .catch(error => ({error, result: null}));
       }),
     );
   }

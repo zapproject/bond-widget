@@ -14,7 +14,7 @@ export class BondWidgetComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() address: string;
   @Input() endpoint: string;
-  @Input() interface: "standard" | "bond" = "standard";
+  @Input() interface: 'standard' | 'bond' = 'standard';
 
   private action = new Subject<{type: 'BOND' | 'UNBOND' | 'APPROVE', payload: number}>();
   private change = new Subject<void>();
@@ -26,12 +26,12 @@ export class BondWidgetComponent implements OnInit, OnChanges, OnDestroy {
   netid$ = this.zap.netId$;
 
   public viewData = {
-    title: "",
-    curvevalues: "",
-    dotsissued: "",
-    allowance: "",
-    bounddots: "",
-    endpointMd: "",
+    title: '',
+    curvevalues: '',
+    dotsissued: '',
+    allowance: '',
+    bounddots: '',
+    endpointMd: '',
   };
 
   constructor(

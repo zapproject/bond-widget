@@ -15,8 +15,10 @@
   [attr.bounddots]="viewData.bounddots"
   [attr.loading]="loading$ | async"
   [attr.interface]="interface"
+  [attr.token]="true"
   (unbond)="handleUnbond($event)"
   (approve)="handleApprove($event)"
+  (tokenApprove)="handleApproveBurn($event)"
   (bond)="handleBond($event)"
 ></zap-bond-form>
 

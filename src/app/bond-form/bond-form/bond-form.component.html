@@ -4,6 +4,7 @@
     <div class="bond-dots-price">{{zapRequired | formatPrice}} ZAP needed</div>
     <button (click)="handleApprove()" type="button">Approve</button>
     <button [disabled]="needApprove" type="submit">Bond</button>
+    <button *ngIf="interface === 'standard' && token" type="button" (click)="handleTokenApprove()">Approve to burn</button>
     <button *ngIf="interface === 'standard'" (click)="handleUnbond()" [disabled]="!canUnbond" type="button">Unbond</button>
   </fieldset>
 </form>
@@ -13,5 +14,5 @@
 </div>
 
 <div *ngIf="!loggedIn">
-  <p>To bond log in using your metamask extension <!-- or <button (click)="showLogin.emit()" type="button">Login with seed</button> --></p>
+  <p>To bond log in using your metamask extension</p>
 </div>
