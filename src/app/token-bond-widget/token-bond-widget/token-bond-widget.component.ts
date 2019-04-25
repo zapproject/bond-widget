@@ -75,7 +75,9 @@ export class TokenBondWidgetComponent implements OnInit {
     this.subscription = change$.pipe(
       switchMap(provider => merge(
         this.providerService.getTitle(this.address).pipe(tap(title => { this.viewData.title = title; })),
-        this.providerService.getCurve(this.address, this.endpoint).pipe(tap(curve => { this.viewData.curvevalues = JSON.stringify(curve.values); })),
+        this.providerService.getCurve(this.address, this.endpoint).pipe(tap(curve => {
+          this.viewData.curvevalues = curve ? JSON.stringify(curve.values) : null;
+        })),
         this.tokenDotFactory$.pipe(
           switchMap(tokenDotFactory => this.bond.getDotBalance(tokenDotFactory, this.endpoint)),
           tap(bounddots => { this.viewData.bounddots = bounddots ? bounddots.toString() : ''; }),

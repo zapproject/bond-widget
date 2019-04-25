@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ProviderServiceModule } from './provider-service.module';
 import { SubscriberService } from '../subscriber-service/subscriber.service';
-import { loadProvider, loadProviderParams } from '../shared/utils';
-import { map, switchMap, filter, tap, distinctUntilChanged } from 'rxjs/operators';
-import { from, Observable } from 'rxjs';
+import { loadProviderParams } from '../shared/utils';
+import { map, switchMap, filter, catchError } from 'rxjs/operators';
+import { from, Observable, of } from 'rxjs';
 import { ZapProvider, Curve } from 'zapjs';
 
 @Injectable({
@@ -12,16 +12,24 @@ import { ZapProvider, Curve } from 'zapjs';
 export class ProviderService {
   constructor(private subscriber: SubscriberService) { }
 
-  getProvider(address): Observable<ZapProvider> {
+  /* getProvider(address): Observable<ZapProvider> {
     return this.subscriber.netId$.pipe(
       map(netId => loadProvider(this.subscriber.web3, netId, address)),
+      catchError(e => {
+        console.log(e);
+        return of(null);
+      }),
     );
-  }
+  } */
 
   getTitle(provider: string) {
     return this.subscriber.registry$.pipe(
       switchMap(registry => {
         return registry.getProviderTitle(provider);
+      }),
+      catchError(e => {
+        console.log(e);
+        return of('');
       }),
     );
     /* return this.subscriber.netId$.pipe(
@@ -35,6 +43,10 @@ export class ProviderService {
       switchMap(registry => {
         return registry.getProviderCurve(provider, endpoint);
       }),
+      catchError(e => {
+        console.log(e);
+        return of(null);
+      }),
     );
     /* return this.subscriber.netId$.pipe(
       switchMap(netId => from(provider.getCurve(endpoint))),
@@ -47,6 +59,10 @@ export class ProviderService {
       switchMap(bondage => {
         return bondage.getDotsIssued({provider, endpoint});
       }),
+      catchError(e => {
+        console.log(e);
+        return of('');
+      }),
     );
     /* return this.subscriber.netId$.pipe(
       switchMap(netId => from(provider.getDotsIssued(endpoint))),
@@ -56,6 +72,10 @@ export class ProviderService {
   getEndpointInfo(provider: ZapProvider, endpoint): Observable<{endpointMd: string, endpointJson: string}> {
     return this.subscriber.netId$.pipe(
       switchMap(netId => from(loadProviderParams(provider, endpoint))),
+      catchError(e => {
+        console.log(e);
+        return of('');
+      }),
       filter(e => !!e),
       map(e => ({endpointMd: e[0], endpointJson: e[1]}))
     );

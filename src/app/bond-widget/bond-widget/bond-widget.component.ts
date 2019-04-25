@@ -48,7 +48,9 @@ export class BondWidgetComponent implements OnInit, OnChanges, OnDestroy {
     this.subscription = change$.pipe(
       switchMap(provider => merge(
         this.providerService.getTitle(this.address).pipe(tap(title => { this.viewData.title = title; })),
-        this.providerService.getCurve(this.address, this.endpoint).pipe(tap(curve => { this.viewData.curvevalues = JSON.stringify(curve.values); })),
+        this.providerService.getCurve(this.address, this.endpoint).pipe(tap(curve => {
+          this.viewData.curvevalues = curve ? JSON.stringify(curve.values) : null;
+        })),
         this.zap.getBoundDots(this.address, this.endpoint).pipe(tap(bounddots => { this.viewData.bounddots = bounddots.toString(); })),
         this.providerService.getDotsIssued(this.address, this.endpoint).pipe(tap(dotsissued => { this.viewData.dotsissued = dotsissued.toString(); })),
         // this.providerService.getEndpointInfo(provider, this.endpoint).pipe(tap(info => { this.viewData.endpointMd = info.endpointMd; })),

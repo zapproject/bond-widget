@@ -12,3 +12,7 @@
 .flex-row > * {
   flex: 1;
 }
+
+p {
+  color: red;
+}
