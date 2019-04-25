@@ -1,29 +1,45 @@
-import { Component, ViewEncapsulation, Input, OnChanges, ChangeDetectorRef, OnDestroy, OnInit } from '@angular/core';
-import { filter, switchMap, share, map, shareReplay, tap } from 'rxjs/operators';
-import { Subject, merge, of, Observable, Subscription } from 'rxjs';
-import { BondService } from 'src/app/bond-service/bond.service';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectorRef, Input } from '@angular/core';
+import { filter, map, tap, switchMap, share, withLatestFrom } from 'rxjs/operators';
+import { merge, Observable, of, Subject } from 'rxjs';
+import { BondTokenService } from 'src/app/token-service/bond-token.service';
+import { TokenDotFactory, Artifacts } from 'zapjs';
+import { getNetworkOptions } from 'src/app/shared/utils';
 import { SubscriberService } from 'src/app/subscriber-service/subscriber.service';
 import { ProviderService } from 'src/app/provider-service/provider.service';
 
 @Component({
-  templateUrl: './bond-widget.component.html',
-  styleUrls: ['./bond-widget.component.css'],
+  templateUrl: './token-bond-widget.component.html',
+  styleUrls: ['./token-bond-widget.component.css'],
   encapsulation: ViewEncapsulation.Emulated
 })
-export class BondWidgetComponent implements OnInit, OnChanges, OnDestroy {
+export class TokenBondWidgetComponent implements OnInit {
 
   @Input() address: string;
   @Input() endpoint: string;
   @Input() interface: 'standard' | 'bond' = 'standard';
 
-  private action = new Subject<{type: 'BOND' | 'UNBOND' | 'APPROVE', payload: number}>();
+  curveValuesStringified: string;
+  title;
+  dotsIssued: any;
+  zapBalance: any;
+  dotsBound: any;
+  eth: any;
+  accountAddress: any;
+  allowance: any = null;
+  private action = new Subject<{type: 'BOND' | 'UNBOND' | 'APPROVE' | 'APPROVE_BURN'; payload: number; tokenDotFactory?: TokenDotFactory}>();
   private change = new Subject<void>();
-  private change$ = this.change.asObservable().pipe(shareReplay(1));
 
   loading$: Observable<boolean>;
-  subscription: Subscription;
+  endpointMd: string;
+
+  subscriptions = [];
+  subscription;
+
   message: {type?: 'ERROR' | 'SUCCESS'; text: string, tx?: any} = null;
-  netid$ = this.zap.netId$;
+
+  netid;
+
+  tokenDotFactory$: Observable<TokenDotFactory>;
 
   public viewData = {
     title: '',
@@ -35,14 +51,25 @@ export class BondWidgetComponent implements OnInit, OnChanges, OnDestroy {
   };
 
   constructor(
-    public zap: SubscriberService,
-    public providerService: ProviderService,
-    public bond: BondService,
+    private zap: SubscriberService,
+    private providerService: ProviderService,
+    public bond: BondTokenService,
     private cd: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
-    const change$ = merge(this.change$, of(1));
+
+    this.tokenDotFactory$ = this.zap.netId$.pipe(map(netId => {
+      this.netid = netId;
+      const tokenDotFactory = new TokenDotFactory(getNetworkOptions(this.zap.web3, netId));
+      if (this.address) {
+        const artifact = Artifacts['TOKENDOTFACTORY'];
+        tokenDotFactory.contract = new this.zap.web3.eth.Contract(artifact.abi, this.address);
+      }
+      return tokenDotFactory;
+    }));
+
+    const change$ = merge(this.change.asObservable(), of(1), this.zap.netId$).pipe(share());
 
     // const provider$ = change$.pipe(switchMap(() => this.providerService.getProvider(this.address)));
     this.subscription = change$.pipe(
@@ -51,43 +78,61 @@ export class BondWidgetComponent implements OnInit, OnChanges, OnDestroy {
         this.providerService.getCurve(this.address, this.endpoint).pipe(tap(curve => {
           this.viewData.curvevalues = curve ? JSON.stringify(curve.values) : null;
         })),
-        this.zap.getBoundDots(this.address, this.endpoint).pipe(tap(bounddots => { this.viewData.bounddots = bounddots.toString(); })),
+        this.tokenDotFactory$.pipe(
+          switchMap(tokenDotFactory => this.bond.getDotBalance(tokenDotFactory, this.endpoint)),
+          tap(bounddots => { this.viewData.bounddots = bounddots ? bounddots.toString() : ''; }),
+        ),
         this.providerService.getDotsIssued(this.address, this.endpoint).pipe(tap(dotsissued => { this.viewData.dotsissued = dotsissued.toString(); })),
         // this.providerService.getEndpointInfo(provider, this.endpoint).pipe(tap(info => { this.viewData.endpointMd = info.endpointMd; })),
-        this.zap.getApproved().pipe(tap(allowance => { this.viewData.allowance = allowance; }))
+        this.tokenDotFactory$.pipe(
+          filter(e => !!e),
+          switchMap(tokenDotFactory => this.zap.getApproved(tokenDotFactory.contract._address)),
+          tap(allowance => { this.viewData.allowance = allowance; }),
+        ),
       )),
       tap(() => { setTimeout(() => { this.cd.detectChanges(); }); }),
     ).subscribe();
 
     const action$ = this.action.asObservable().pipe(
+      withLatestFrom(this.tokenDotFactory$),
+      map(([action, tokenDotFactory]) => {
+        action.tokenDotFactory = tokenDotFactory;
+        return action;
+      }),
       share(),
     );
     const bond$ = action$.pipe(
       filter(({type}) => type === 'BOND'),
       tap(() => { this.handleMessage({text: 'Bonding...'}); }),
-      switchMap(({payload}) => this.bond.bond(this.address, this.endpoint, payload)),
+      switchMap(({payload, tokenDotFactory}) => this.bond.bond(tokenDotFactory, this.endpoint, payload)),
       share(),
     );
     const unbond$ = action$.pipe(
       filter(({type}) => type === 'UNBOND'),
       tap(() => { this.handleMessage({text: 'Unbonding...'}); }),
-      switchMap(({payload}) => this.bond.unbond(this.address, this.endpoint, payload)),
+      switchMap(({payload, tokenDotFactory}) => this.bond.unbond(tokenDotFactory, this.endpoint, payload)),
       share(),
     );
     const approve$ = action$.pipe(
       filter(({type}) => type === 'APPROVE'),
       tap(() => { this.handleMessage({text: 'Approving...'}); }),
-      switchMap(({payload}) => this.bond.approve(payload)),
+      switchMap(({payload, tokenDotFactory}) => this.bond.approve(tokenDotFactory, payload)),
       share(),
     );
-    const error$ = merge(bond$, unbond$, approve$).pipe(
+    const approveBurn$ = action$.pipe(
+      filter(({type}) => type === 'APPROVE_BURN'),
+      tap(() => { this.handleMessage({text: 'Approving...'}); }),
+      switchMap(({payload, tokenDotFactory}) => this.bond.approveBurn(tokenDotFactory, this.endpoint, payload)),
+      share(),
+    );
+    const error$ = merge(bond$, unbond$, approve$, approveBurn$).pipe(
       filter(response => !!response.error),
       map(({error}) => error),
       tap(error => {
         this.handleMessage({text: error.message, type: 'ERROR'});
       }),
     );
-    const success$ = merge(bond$, unbond$, approve$).pipe(
+    const success$ = merge(bond$, unbond$, approve$, approveBurn$).pipe(
       filter(response => !response.error),
       map(({result}) => result),
       tap((result) => {
@@ -110,14 +155,14 @@ export class BondWidgetComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges() {
-    if (!this.address || !this.endpoint) return;
+    if (!this.endpoint) return;
     this.change.next();
   }
 
   ngOnDestroy() {
     this.change.complete();
     this.action.complete();
-    if (this.subscription) this.subscription.unsubscribe();
+    this.subscriptions.forEach( e => e.unsubscribe());
   }
 
   handleBond(e: CustomEvent) {
@@ -131,5 +176,8 @@ export class BondWidgetComponent implements OnInit, OnChanges, OnDestroy {
   handleApprove(e: CustomEvent) {
     this.action.next({type: 'APPROVE', payload: e.detail});
   }
-}
+  handleApproveBurn(e: CustomEvent) {
+    this.action.next({type: 'APPROVE_BURN', payload: e.detail});
+  }
 
+}

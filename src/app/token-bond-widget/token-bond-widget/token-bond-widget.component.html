@@ -1,6 +1,6 @@
 <zap-message *ngIf="message" [type]="message.type">
   {{message.text}}
-  <zap-transaction-info *ngIf="message.tx" [attr.netid]="netid$ | async" [attr.tx]="message.tx"></zap-transaction-info>
+  <zap-transaction-info *ngIf="message.tx" [attr.netid]="netid" [attr.tx]="message.tx"></zap-transaction-info>
 </zap-message>
 
 <div class="flex-row">
@@ -16,8 +16,10 @@
   [attr.bounddots]="viewData.bounddots"
   [attr.loading]="loading$ | async"
   [attr.interface]="interface"
+  [attr.token]="true"
   (unbond)="handleUnbond($event)"
   (approve)="handleApprove($event)"
+  (tokenApprove)="handleApproveBurn($event)"
   (bond)="handleBond($event)"
 ></zap-bond-form>
 

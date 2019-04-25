@@ -1,4 +1,4 @@
-<div>{{title}}</div>
+<div>{{title$ | async}}</div>
 <div>{{endpoint}}</div>
-<div>DOTs issued: {{dotsissued}}</div>
-<div [hidden]="bounddots === undefined || bounddots === null">DOTs bound: {{bounddots}}</div>
+<div>DOTs issued: {{dotsissued$ | async}}</div>
+<div *ngIf="bounddots" [hidden]="bounddots === undefined || bounddots === null">DOTs bound: {{bounddots}}</div>

@@ -1,4 +1,7 @@
-import { Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectorRef, Input, OnChanges, OnDestroy } from '@angular/core';
+import { SubscriberService } from 'src/app/subscriber-service/subscriber.service';
+import { Observable, Subject } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Component({
   templateUrl: './zap-user-info.component.html',
@@ -7,14 +10,27 @@ import { Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
 })
 export class ZapUserInfoComponent implements OnInit {
 
-  @Input() address: any;
-  @Input() zap: any;
-  @Input() eth: any;
-  @Input() approved: any;
+  @Input() approved = "";
 
-  constructor() { }
+  account$: Observable<string>;
+  balance$: Observable<string>;
+  eth$: Observable<string>;
+
+  constructor(
+    private subscriber: SubscriberService,
+    private cd: ChangeDetectorRef,
+  ) {
+    this.detectChanges = this.detectChanges.bind(this);
+  }
 
   ngOnInit() {
+    this.account$ = this.subscriber.account$.pipe(tap(this.detectChanges));
+    this.balance$ = this.subscriber.balance$.pipe(tap(this.detectChanges));
+    this.eth$ = this.subscriber.eth$.pipe(tap(this.detectChanges));
+  }
+
+  private detectChanges() {
+    setTimeout(() => { this.cd.detectChanges(); });
   }
 
 }

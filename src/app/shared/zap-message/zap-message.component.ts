@@ -3,7 +3,7 @@ import { Component, OnInit, ViewEncapsulation, HostBinding, Input } from '@angul
 @Component({
   templateUrl: './zap-message.component.html',
   styleUrls: ['./zap-message.component.css'],
-  encapsulation: ViewEncapsulation.Emulated
+  encapsulation: ViewEncapsulation.ShadowDom
 })
 export class ZapMessageComponent implements OnInit {
 
