@@ -31,10 +31,17 @@ export class SubscriberService {
 
   constructor() {
     const trigger$ = this.triggerUpdate.asObservable();
-    const interval$ = merge(trigger$, of(1), interval(5000)).pipe(share());
-    this.web3 = this.getWeb3();
+    const interval$ = merge(trigger$, of(1), interval(5000)).pipe(
+      filter(() => !!this.web3),
+      share(),
+    );
+    this.getWeb3().then(web3 => {
+      this.web3 = web3;
+      this.triggerUpdate.next();
+    });
 
     this.netId$ = interval$.pipe(
+      filter(() => !!this.web3),
       switchMap(() => from(this.web3.eth.net.getId() as Promise<number>)),
       distinctUntilChanged(),
       shareReplay(1),
@@ -100,12 +107,12 @@ export class SubscriberService {
     this.triggerUpdate.next();
   }
 
-  private getWeb3(): Web3 {
+  private async getWeb3(): Promise<Web3> {
     let web3: Web3;
     try {
       if (window.ethereum) {
         web3 = new Web3(window.ethereum);
-        // await window.ethereum.enable();
+        await window.ethereum.enable();
       } else if (window.web3) {
         web3 = new Web3(window.web3.currentProvider);
       } else {
