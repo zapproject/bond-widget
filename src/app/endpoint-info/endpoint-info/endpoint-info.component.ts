@@ -27,14 +27,14 @@ export class EndpointInfoComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnInit() {
     const change$ = merge(this.change.asObservable(), of(1));
-    const provider$ = change$.pipe(switchMap(() => this.providerService.getProvider(this.address)), share());
+    // const provider$ = change$.pipe(switchMap(() => this.providerService.getProvider(this.address)), share());
 
-    this.title$ = provider$.pipe(
-      switchMap(provider => this.providerService.getTitle(provider)),
+    this.title$ = change$.pipe(
+      switchMap(provider => this.providerService.getTitle(this.address)),
       tap(this.updateChanges),
     );
-    this.dotsissued$ = provider$.pipe(
-      switchMap(provider => this.providerService.getDotsIssued(provider, this.endpoint)),
+    this.dotsissued$ = change$.pipe(
+      switchMap(provider => this.providerService.getDotsIssued(this.address, this.endpoint)),
       map(e => e.toString()),
       tap(this.updateChanges),
     );

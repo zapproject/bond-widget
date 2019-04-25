@@ -44,14 +44,14 @@ export class BondWidgetComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     const change$ = merge(this.change$, of(1));
 
-    const provider$ = change$.pipe(switchMap(() => this.providerService.getProvider(this.address)));
-    this.subscription = provider$.pipe(
+    // const provider$ = change$.pipe(switchMap(() => this.providerService.getProvider(this.address)));
+    this.subscription = change$.pipe(
       switchMap(provider => merge(
-        this.providerService.getTitle(provider).pipe(tap(title => { this.viewData.title = title; })),
-        this.providerService.getCurve(provider, this.endpoint).pipe(tap(curve => { this.viewData.curvevalues = JSON.stringify(curve.values); })),
-        this.zap.getBoundDots(provider.providerOwner, this.endpoint).pipe(tap(bounddots => { this.viewData.bounddots = bounddots.toString(); })),
-        this.providerService.getDotsIssued(provider, this.endpoint).pipe(tap(dotsissued => { this.viewData.dotsissued = dotsissued.toString(); })),
-        this.providerService.getEndpointInfo(provider, this.endpoint).pipe(tap(info => { this.viewData.endpointMd = info.endpointMd; })),
+        this.providerService.getTitle(this.address).pipe(tap(title => { this.viewData.title = title; })),
+        this.providerService.getCurve(this.address, this.endpoint).pipe(tap(curve => { this.viewData.curvevalues = JSON.stringify(curve.values); })),
+        this.zap.getBoundDots(this.address, this.endpoint).pipe(tap(bounddots => { this.viewData.bounddots = bounddots.toString(); })),
+        this.providerService.getDotsIssued(this.address, this.endpoint).pipe(tap(dotsissued => { this.viewData.dotsissued = dotsissued.toString(); })),
+        // this.providerService.getEndpointInfo(provider, this.endpoint).pipe(tap(info => { this.viewData.endpointMd = info.endpointMd; })),
         this.zap.getApproved().pipe(tap(allowance => { this.viewData.allowance = allowance; }))
       )),
       tap(() => { setTimeout(() => { this.cd.detectChanges(); }); }),

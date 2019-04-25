@@ -3,8 +3,8 @@ import { SubscriberModule } from './subscriber-service.module';
 import { Observable, from, merge, interval, of, Subject } from 'rxjs';
 import { map, shareReplay, switchMap, filter, share, distinctUntilChanged } from 'rxjs/operators';
 import Web3 from 'web3';
-import { ZapSubscriber } from 'zapjs';
-import { loadSubscriber } from '../shared/utils';
+import { ZapSubscriber, ZapBondage, ZapRegistry } from 'zapjs';
+import { loadSubscriber, getNetworkOptions } from '../shared/utils';
 
 interface AppWindow extends Window {
   web3: any;
@@ -26,6 +26,9 @@ export class SubscriberService {
   public balance$: Observable<any>;
   public eth$: Observable<any>;
 
+  public bondage$: Observable<ZapBondage>;
+  public registry$: Observable<ZapRegistry>;
+
   constructor() {
     const trigger$ = this.triggerUpdate.asObservable();
     const interval$ = merge(trigger$, of(1), interval(5000)).pipe(share());
@@ -35,6 +38,13 @@ export class SubscriberService {
       switchMap(() => from(this.web3.eth.net.getId() as Promise<number>)),
       distinctUntilChanged(),
       shareReplay(1),
+    );
+
+    this.registry$ = this.netId$.pipe(
+      map(networkId => new ZapRegistry(getNetworkOptions(this.web3, networkId)))
+    );
+    this.bondage$ = this.netId$.pipe(
+      map(networkId => new ZapBondage(getNetworkOptions(this.web3, networkId)))
     );
 
     this.account$ = interval$.pipe(

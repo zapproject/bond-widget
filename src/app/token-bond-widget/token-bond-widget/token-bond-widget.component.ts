@@ -71,17 +71,17 @@ export class TokenBondWidgetComponent implements OnInit {
 
     const change$ = merge(this.change.asObservable(), of(1), this.zap.netId$).pipe(share());
 
-    const provider$ = change$.pipe(switchMap(() => this.providerService.getProvider(this.address)));
-    this.subscription = provider$.pipe(
+    // const provider$ = change$.pipe(switchMap(() => this.providerService.getProvider(this.address)));
+    this.subscription = change$.pipe(
       switchMap(provider => merge(
-        this.providerService.getTitle(provider).pipe(tap(title => { this.viewData.title = title; })),
-        this.providerService.getCurve(provider, this.endpoint).pipe(tap(curve => { this.viewData.curvevalues = JSON.stringify(curve.values); })),
+        this.providerService.getTitle(this.address).pipe(tap(title => { this.viewData.title = title; })),
+        this.providerService.getCurve(this.address, this.endpoint).pipe(tap(curve => { this.viewData.curvevalues = JSON.stringify(curve.values); })),
         this.tokenDotFactory$.pipe(
           switchMap(tokenDotFactory => this.bond.getDotBalance(tokenDotFactory, this.endpoint)),
           tap(bounddots => { this.viewData.bounddots = bounddots ? bounddots.toString() : ''; }),
         ),
-        this.providerService.getDotsIssued(provider, this.endpoint).pipe(tap(dotsissued => { this.viewData.dotsissued = dotsissued.toString(); })),
-        this.providerService.getEndpointInfo(provider, this.endpoint).pipe(tap(info => { this.viewData.endpointMd = info.endpointMd; })),
+        this.providerService.getDotsIssued(this.address, this.endpoint).pipe(tap(dotsissued => { this.viewData.dotsissued = dotsissued.toString(); })),
+        // this.providerService.getEndpointInfo(provider, this.endpoint).pipe(tap(info => { this.viewData.endpointMd = info.endpointMd; })),
         this.tokenDotFactory$.pipe(
           filter(e => !!e),
           switchMap(tokenDotFactory => this.zap.getApproved(tokenDotFactory.contract._address)),

@@ -55,7 +55,9 @@ export function getNetworkOptions(web3: any, networkId: any) {
 }
 
 export function loadProvider(web3: any, networkId: any, owner: string): ZapProvider {
-  return new ZapProvider(owner, getNetworkOptions(web3, networkId));
+  const options = getNetworkOptions(web3, networkId);
+  console.log('loadProvider', options, networkId, owner);
+  return new ZapProvider(owner, options);
 }
 
 export function getProviderParam(provider: ZapProvider, key: string): Promise<string> {
