@@ -60,7 +60,7 @@ export class BondFormComponent implements OnChanges, AfterViewInit {
         this.curve = new Curve(JSON.parse(changes.curvevalues.currentValue));
         this.updateValues();
       } catch (e) {
-        console.log('Error parse', changes.curvevalues.currentValue);
+        console.log('Zap bond form - Error parse', changes.curvevalues.currentValue);
       }
     }
     if (changes.allowance && changes.allowance.currentValue !== changes.allowance.previousValue) {
@@ -94,7 +94,7 @@ export class BondFormComponent implements OnChanges, AfterViewInit {
       this.zapRequired = this.curve.getZapRequired(this.dotsIssued, this.dots);
       this.cd.detectChanges();
     } catch (e) {
-      console.log(e);
+      console.log('getZapRequired', e);
       this.input.nativeElement.value = this.max.toString();
       this.zapRequired = this.curve.getZapRequired(this.dotsIssued, this.max);
       this.cd.detectChanges();

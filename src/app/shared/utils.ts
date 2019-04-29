@@ -72,13 +72,13 @@ export function decodeParam(hex: string): string {
   try {
     return hexToUtf8(hex);
   } catch (e) {
-    console.log(e);
+    console.log('decodeParam', e);
   }
   try {
     const address = hexToAddress(hex.replace('0x', ''));
     if (isIpfsAddress(address)) return address;
   } catch (e) {
-    console.log(e);
+    console.log('hexToAddress', e);
   }
   return hex;
 }
@@ -96,8 +96,8 @@ export function formatJSON(json: string, tab = 4): string {
 
 export function loadProviderParams(provider: ZapProvider, endpoint: string): Promise<void | string[]> {
   return Promise.all([
-    getProviderParam(provider, endpoint + '.md')/* .then(getUrlText) */.catch(e => { console.log(e); return ''; }),
-    getProviderParam(provider, endpoint + '.json')/* .then(getUrlText) */.catch(e => { console.log(e); return ''; }),
+    getProviderParam(provider, endpoint + '.md')/* .then(getUrlText) */.catch(e => { console.log('getProviderParam md', e); return ''; }),
+    getProviderParam(provider, endpoint + '.json')/* .then(getUrlText) */.catch(e => { console.log('getProviderParam json', e); return ''; }),
   ]).catch(console.error);
 }
 

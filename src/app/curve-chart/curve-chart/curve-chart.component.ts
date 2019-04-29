@@ -41,7 +41,7 @@ export class CurveChartComponent implements OnChanges, AfterViewInit {
       const dotsIssued = Number(this.dotsissued);
       this.chart.draw(this.values, isNaN(dotsIssued) || dotsIssued < 1 ? 1 : dotsIssued);
     } catch (e) {
-      console.log('e', e);
+      console.log('updateChart', e);
     }
   }
 

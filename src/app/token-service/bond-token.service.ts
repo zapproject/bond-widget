@@ -60,7 +60,7 @@ export class BondTokenService {
     const noop$ = subscriber$.pipe(filter(subscriber => !subscriber), map(() => null));
     const dots$ = subscriber$.pipe(
       filter(subscriber => !!subscriber && subscriber instanceof ZapSubscriber),
-      switchMap(subscriber => tokenDotFactory.getDotBalance({specifier: endpoint, from: subscriber.subscriberOwner})),
+      switchMap(subscriber => tokenDotFactory.getDotTokenBalance({endpoint, from: subscriber.subscriberOwner})),
     );
     return merge(noop$, dots$);
   }
@@ -84,7 +84,7 @@ export class BondTokenService {
   }
 
   approveBurn(tokenDotFactory: TokenDotFactory, endpoint: string, dots: number) {
-    const tokenAddressPromise = tokenDotFactory.getDotAddress({specifier: endpoint});
+    const tokenAddressPromise = tokenDotFactory.getDotAddress(endpoint);
     return from(tokenAddressPromise).pipe(
       withLatestFrom(this.subscriber$.pipe(filter(subscriber => !!subscriber && subscriber instanceof ZapSubscriber))),
       switchMap(([tokenAddress, subscriber]) => {

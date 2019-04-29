@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { SubscriberModule } from './subscriber-service.module';
 import { Observable, from, merge, interval, of, Subject } from 'rxjs';
-import { map, shareReplay, switchMap, filter, share, distinctUntilChanged } from 'rxjs/operators';
+import { map, shareReplay, switchMap, filter, share, distinctUntilChanged, catchError } from 'rxjs/operators';
 import Web3 from 'web3';
-import { ZapSubscriber, ZapBondage, ZapRegistry } from 'zapjs';
+import { ZapSubscriber, ZapBondage, ZapRegistry, Types } from 'zapjs';
 import { loadSubscriber, getNetworkOptions } from '../shared/utils';
 
 interface AppWindow extends Window {
@@ -114,6 +114,27 @@ export class SubscriberService {
     });
   }
 
+
+  getBroker(provider: string, endpoint: string) {
+    return this.registry$.pipe(
+      switchMap(registry => {
+        return registry.contract.methods
+          .getEndpointBroker(provider, this.web3.utils.utf8ToHex(endpoint))
+          .call();
+      }),
+      catchError(e => {
+        console.log('getBroker', e);
+        return of(Types.NULL_ADDRESS);
+      }),
+    );
+  }
+
+  isToken(provider: string, endpoint: string) {
+    return this.getBroker(provider, endpoint).pipe(
+      map(address => address !== Types.NULL_ADDRESS),
+    );
+  }
+
   private async getWeb3(): Promise<Web3> {
     let web3: Web3;
     try {
@@ -127,7 +148,7 @@ export class SubscriberService {
       }
       return web3;
     } catch (e) {
-      console.log(e);
+      console.log('getWeb3', e);
       return new Web3(window.ethereum || window.web3 || 'wss://kovan.infura.io/ws');
     }
   }

@@ -30,7 +30,7 @@
     "web3": "1.0.0-beta.36",
     "web3-utils": "1.0.0-beta.36",
     "zap-curve-chart": "git+https://github.com/zapproject/zap-curve-chart.git",
-    "zapjs": "^1.0.17",
+    "zapjs": "^2.2.1",
     "zone.js": "^0.8.29"
   },
   "devDependencies": {

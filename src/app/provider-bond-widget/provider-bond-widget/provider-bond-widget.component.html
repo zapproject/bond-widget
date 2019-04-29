@@ -1,0 +1,35 @@
+<zap-message *ngIf="message" [type]="message.type">
+  {{message.text}}
+  <zap-transaction-info *ngIf="message.tx" [attr.netid]="netid$ | async" [attr.tx]="message.tx"></zap-transaction-info>
+</zap-message>
+
+<div class="flex-row">
+  <zap-user-info [attr.approved]="viewData.allowance"></zap-user-info>
+  <zap-endpoint-info [attr.bounddots]="viewData.bounddots" [attr.address]="address" [attr.endpoint]="endpoint"></zap-endpoint-info>
+</div>
+
+<zap-bond-form
+  *ngIf="viewData.curvevalues"
+  [attr.curvevalues]="viewData.curvevalues"
+  [attr.dotsissued]="viewData.dotsissued"
+  [attr.allowance]="viewData.allowance"
+  [attr.bounddots]="viewData.bounddots"
+  [attr.loading]="loading$ | async"
+  [attr.interface]="interface"
+  (unbond)="handleUnbond($event)"
+  (approve)="handleApprove($event)"
+  (bond)="handleBond($event)"
+  (showLogin)="zap.login()"
+></zap-bond-form>
+
+<ng-template #invalidCurve>
+  <p>Curve does not exist or invalid</p>
+</ng-template>
+
+<zap-curve-chart
+  *ngIf="viewData.curvevalues !== null; else invalidCurve"
+  [attr.curvevalues]="viewData.curvevalues"
+  [attr.dotsissued]="viewData.dotsissued">
+</zap-curve-chart>
+
+<zap-markdown [attr.url]="viewData.endpointMd"></zap-markdown>

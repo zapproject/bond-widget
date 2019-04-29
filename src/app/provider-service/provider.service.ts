@@ -23,12 +23,14 @@ export class ProviderService {
   } */
 
   getTitle(provider: string) {
+    if (!provider) return of('');
+    console.log('getTitle provider', provider);
     return this.subscriber.registry$.pipe(
       switchMap(registry => {
         return registry.getProviderTitle(provider);
       }),
       catchError(e => {
-        console.log(e);
+        console.log('getTitle', e);
         return of('');
       }),
     );
@@ -38,13 +40,13 @@ export class ProviderService {
   }
 
   getCurve(provider: string, endpoint: string): Observable<Curve> {
-    console.log('getCurve', provider, endpoint);
+    if (!provider || !endpoint) return of(null);
     return this.subscriber.registry$.pipe(
       switchMap(registry => {
         return registry.getProviderCurve(provider, endpoint);
       }),
       catchError(e => {
-        console.log(e);
+        console.log('getCurve', e);
         return of(null);
       }),
     );
@@ -55,12 +57,13 @@ export class ProviderService {
   }
 
   getDotsIssued(provider: string, endpoint: string) {
+    if (!provider || !endpoint) return of('');
     return this.subscriber.bondage$.pipe(
       switchMap(bondage => {
         return bondage.getDotsIssued({provider, endpoint});
       }),
       catchError(e => {
-        console.log(e);
+        console.log('getDotsIssued', e);
         return of('');
       }),
     );
@@ -69,11 +72,12 @@ export class ProviderService {
     ); */
   }
 
-  getEndpointInfo(provider: ZapProvider, endpoint): Observable<{endpointMd: string, endpointJson: string}> {
+  getEndpointInfo(provider: ZapProvider, endpoint): Observable<{endpointMd: string; endpointJson: string}> {
+    if (!provider || !endpoint) return of({endpointMd: '', endpointJson: ''});
     return this.subscriber.netId$.pipe(
       switchMap(netId => from(loadProviderParams(provider, endpoint))),
       catchError(e => {
-        console.log(e);
+        console.log('getEndpointInfo', e);
         return of('');
       }),
       filter(e => !!e),

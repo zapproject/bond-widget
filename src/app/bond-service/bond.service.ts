@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { switchMap, filter } from 'rxjs/operators';
 import { ZapSubscriber, Types } from 'zapjs';
 import BigNumber from 'bignumber.js';
