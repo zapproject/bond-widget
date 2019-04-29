@@ -14,5 +14,5 @@
 </div>
 
 <div *ngIf="!loggedIn">
-  <p>To bond log in using your metamask extension</p>
+  <p>To bond log in using your metamask extension <button (click)="showLogin.emit()" type="button">Log in</button></p>
 </div>

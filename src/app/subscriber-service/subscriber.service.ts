@@ -107,12 +107,19 @@ export class SubscriberService {
     this.triggerUpdate.next();
   }
 
+  login() {
+    if (!window.ethereum) return;
+    window.ethereum.enable().then(() => {
+      this.triggerUpdate.next();
+    });
+  }
+
   private async getWeb3(): Promise<Web3> {
     let web3: Web3;
     try {
       if (window.ethereum) {
         web3 = new Web3(window.ethereum);
-        await window.ethereum.enable();
+        // await window.ethereum.enable();
       } else if (window.web3) {
         web3 = new Web3(window.web3.currentProvider);
       } else {

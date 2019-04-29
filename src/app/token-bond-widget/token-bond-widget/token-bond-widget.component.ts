@@ -51,7 +51,7 @@ export class TokenBondWidgetComponent implements OnInit {
   };
 
   constructor(
-    private zap: SubscriberService,
+    public zap: SubscriberService,
     private providerService: ProviderService,
     public bond: BondTokenService,
     private cd: ChangeDetectorRef,
