@@ -65,6 +65,11 @@ export class BondTokenService {
     return merge(noop$, dots$);
   }
 
+  getTokenAddress(tokenDotFactory:TokenDotFactory, endpoint:string){
+    const tokenAddressPromise = tokenDotFactory.getDotAddress(endpoint);
+    return tokenAddressPromise.then(result=>(result)).catch(error=>(null))
+  }
+
   approve(tokenDotFactory: TokenDotFactory, zap: number): Observable<{result: any; error: any}> {
     const amount = (new BigNumber(zap)).toFixed();
     return this.subscriber$.pipe(
