@@ -66,8 +66,7 @@ export class BondTokenService {
   }
 
   getTokenAddress(tokenDotFactory:TokenDotFactory, endpoint:string){
-    const tokenAddressPromise = tokenDotFactory.getDotAddress(endpoint);
-    return tokenAddressPromise.then(result=>(result)).catch(error=>(null))
+    return tokenDotFactory.getDotAddress(endpoint).catch(error => '');
   }
 
   approve(tokenDotFactory: TokenDotFactory, zap: number): Observable<{result: any; error: any}> {

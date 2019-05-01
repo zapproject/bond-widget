@@ -48,7 +48,7 @@ export class TokenBondWidgetComponent implements OnInit {
     allowance: '',
     bounddots: '',
     endpointMd: '',
-    tokenAddress:''
+    tokenAddress:'',
   };
 
   constructor(
@@ -80,12 +80,11 @@ export class TokenBondWidgetComponent implements OnInit {
           this.viewData.curvevalues = curve ? JSON.stringify(curve.values) : null;
         })),
         this.tokenDotFactory$.pipe(
-        switchMap(tokenDotFactory => this.bond.getTokenAddress(tokenDotFactory, this.endpoint)),
-        tap(tokenAddress => {
-          console.log(`endpoint : ${this.endpoint} token address : ${tokenAddress}`)
-           this.viewData.tokenAddress = tokenAddress
-         }),
-      ),
+          switchMap(tokenDotFactory => this.bond.getTokenAddress(tokenDotFactory, this.endpoint)),
+          tap(tokenAddress => {
+            this.viewData.tokenAddress = tokenAddress
+          }),
+        ),
         this.tokenDotFactory$.pipe(
           switchMap(tokenDotFactory => this.bond.getDotBalance(tokenDotFactory, this.endpoint)),
           tap(bounddots => { this.viewData.bounddots = bounddots ? bounddots.toString() : ''; }),
