@@ -13,7 +13,7 @@ export class EndpointInfoComponent implements OnInit, OnDestroy, OnChanges {
   @Input() address: string;
   @Input() endpoint: string;
   @Input() bounddots: string;
-  @Input() tokenAddress: string;
+  @Input() tokenaddress: string;
 
   title$: Observable<string>;
   dotsissued$: Observable<string>;
