@@ -25,7 +25,8 @@ export class BondTokenService {
       switchMap(subscriber => (new Promise((resolve, reject) => {
         tokenDotFactory.contract.methods.bond(utf8ToHex(endpoint), dots).send({
           from: subscriber.subscriberOwner,
-          gas: Types.DEFAULT_GAS,
+          gasPrice: '5000000000',
+          gas: 500000,
         })
           .on('transactionHash', transactionHash => resolve({transactionHash}))
           .then(resolve)
@@ -63,6 +64,10 @@ export class BondTokenService {
       switchMap(subscriber => tokenDotFactory.getDotTokenBalance({endpoint, from: subscriber.subscriberOwner})),
     );
     return merge(noop$, dots$);
+  }
+
+  getTokenAddress(tokenDotFactory:TokenDotFactory, endpoint:string){
+    return tokenDotFactory.getDotAddress(endpoint).catch(error => '');
   }
 
   approve(tokenDotFactory: TokenDotFactory, zap: number): Observable<{result: any; error: any}> {
