@@ -34,7 +34,7 @@
       },
       "architect": {
         "build": {
-          "builder": "ngx-build-plus:build",
+          "builder": "ngx-build-plus:browser",
           "options": {
             "outputPath": "dist/zap-elements",
             "index": "src/index.html",
@@ -50,7 +50,7 @@
             ],
             "scripts": [
               {
-                "input": "node_modules/document-register-element/build/document-register-element.js",
+                "input": "node_modules/document-register-element/build/document-register-element.js"
               },
               {
                 "input": "node_modules/bn.js/lib/bn.js"
