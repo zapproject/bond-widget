@@ -1,4 +1,4 @@
-<div *ngIf="account$ | async as address" [title]="address">Address: {{address | slice :0:4}}...{{address | slice :38:42}}</div>
-<div *ngIf="balance$ | async as zap">{{zap | formatPrice}} Zap</div>
-<div *ngIf="eth$ | async as eth">{{eth | formatPrice}} ETH</div>
-<div *ngIf="approved">{{approved | formatPrice}} ZAP approved</div>
+<div class="zap-user-info__address" *ngIf="account$ | async as address" [title]="address">Address: {{address | slice :0:4}}...{{address | slice :38:42}}</div>
+<div class="zap-user-info__zap" *ngIf="balance$ | async as zap">{{zap | formatPrice}} Zap</div>
+<div class="zap-user-info__eth" *ngIf="eth$ | async as eth">{{eth | formatPrice}} ETH</div>
+<div class="zap-user-info__approved" *ngIf="approved">{{approved | formatPrice}} ZAP approved</div>

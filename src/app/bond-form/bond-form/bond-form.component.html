@@ -9,10 +9,10 @@
   </fieldset>
 </form>
 
-<div *ngIf="loggedIn && needApprove">
+<div class="zap-bond-form__need-approve" *ngIf="loggedIn && needApprove">
   <p>To bond you need approve ZAP first</p>
 </div>
 
-<div *ngIf="!loggedIn">
+<div class="zap-bond-form__login" *ngIf="!loggedIn">
   <p>To bond log in using your metamask extension <button (click)="showLogin.emit()" type="button">Log in</button></p>
 </div>

@@ -1,3 +1,41 @@
 zap-curve-chart {
   display: block;
 }
+
+
+.curve-chart {
+	display: block;
+	background-color: #ffffffab;
+	border-color: white;
+	border-style: solid;
+	border-width: 2px;
+	position: absolute;
+	margin-top: -288px;
+	margin-left: 190px;
+	height: 150px;
+	border-radius: 15px;
+	width: 260px;
+	overflow: hidden;
+}
+
+.curve-chart circle {
+	fill: var(--primary-color);
+}
+
+.curve-string {
+	position: absolute;
+	width: 150px;
+	overflow: hidden;
+	margin-left: 475px;
+	margin-top: -258px;
+	font-weight: 600;
+}
+
+.curve-values {
+	margin-left: 475px;
+	overflow: hidden;
+	width: 150px;
+	margin-top: -278px;
+	position: absolute;
+	font-weight: 600;
+}
