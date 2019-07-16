@@ -1,0 +1,9 @@
+html {
+	--background-image: linear-gradient(-0deg, #4CAF50, #fbff07);
+	--primary-color: #8bc34a;
+	--warn-color: rgba(255, 0, 0, 0.659);
+	--button-hover-gradient-start: #8bc34a;
+	--button-hover-gradient-end: #4CAF50;
+	--button-hover-gradient-direction: -180deg;
+	--chart-circle-fill: #4CAF50;
+}
