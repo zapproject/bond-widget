@@ -13,7 +13,7 @@ export class CurveChartComponent implements OnChanges, AfterViewInit {
 
   private chart: CurveSvgLineChart;
 
-  @ViewChild('curveChart') curveChartRef: ElementRef<HTMLDivElement>;
+  @ViewChild('curveChart', { static: true }) curveChartRef: ElementRef<HTMLDivElement>;
 
   values: number[] = null;
   curveString = '';

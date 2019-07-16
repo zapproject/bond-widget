@@ -35,7 +35,7 @@ export class BondFormComponent implements OnChanges, AfterViewInit {
   @Output() bond = new EventEmitter<number>();
   @Output() showLogin = new EventEmitter<void>();
 
-  @ViewChild('input') input: ElementRef<HTMLInputElement>;
+  @ViewChild('input', { static: true }) input: ElementRef<HTMLInputElement>;
 
   private curve: Curve;
   private approved: number;
