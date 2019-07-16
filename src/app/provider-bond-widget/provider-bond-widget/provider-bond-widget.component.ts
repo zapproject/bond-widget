@@ -8,7 +8,7 @@ import { ProviderService } from 'src/app/provider-service/provider.service';
 @Component({
   templateUrl: './provider-bond-widget.component.html',
   styleUrls: ['./provider-bond-widget.component.css'],
-  encapsulation: ViewEncapsulation.Emulated
+  encapsulation: ViewEncapsulation.None
 })
 export class PorviderBondWidgetComponent implements OnInit, OnChanges, OnDestroy {
 

@@ -1,18 +1,18 @@
-:host {
+zap-provider-bond-widget {
   display: block;
 }
 
-.flex-row {
+zap-provider-bond-widget .flex-row {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   justify-content: space-between;
 }
 
-.flex-row > * {
+zap-provider-bond-widget .flex-row > * {
   flex: 1;
 }
 
-p {
+zap-provider-bond-widget p {
   color: red;
 }

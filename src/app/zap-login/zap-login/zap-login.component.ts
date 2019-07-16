@@ -4,7 +4,7 @@ import HDWalletProvider from 'truffle-hdwallet-provider';
 @Component({
   templateUrl: './zap-login.component.html',
   styleUrls: ['./zap-login.component.css'],
-  encapsulation: ViewEncapsulation.Emulated
+  encapsulation: ViewEncapsulation.None
 })
 export class ZapLoginComponent implements OnInit {
 

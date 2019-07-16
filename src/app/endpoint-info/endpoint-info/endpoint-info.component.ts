@@ -6,7 +6,7 @@ import { ProviderService } from 'src/app/provider-service/provider.service';
 @Component({
   templateUrl: './endpoint-info.component.html',
   styleUrls: ['./endpoint-info.component.css'],
-  encapsulation: ViewEncapsulation.Emulated
+  encapsulation: ViewEncapsulation.None
 })
 export class EndpointInfoComponent implements OnInit, OnDestroy, OnChanges {
 

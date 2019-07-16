@@ -17,7 +17,7 @@ import { Curve } from 'zapjs';
 @Component({
   templateUrl: './bond-form.component.html',
   styleUrls: ['./bond-form.component.css'],
-  encapsulation: ViewEncapsulation.Emulated
+  encapsulation: ViewEncapsulation.None
 })
 export class BondFormComponent implements OnChanges, AfterViewInit {
 

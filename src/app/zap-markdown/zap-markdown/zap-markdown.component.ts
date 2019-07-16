@@ -8,7 +8,7 @@ import 'github-markdown-css';
     '../../../../node_modules/github-markdown-css/github-markdown.css',
     './zap-markdown.component.css',
   ],
-  encapsulation: ViewEncapsulation.Emulated
+  encapsulation: ViewEncapsulation.None
 })
 export class ZapMarkdownComponent implements OnInit, OnChanges {
 

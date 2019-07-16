@@ -1,11 +1,11 @@
-:host {
+zap-bond-form {
   display: block;
 }
 
-p {
+zap-bond-form p {
   color: red;
 }
 
-button {
+zap-bond-form button {
   margin: 5px 10px 5px 0;
 }

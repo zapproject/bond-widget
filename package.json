@@ -6,7 +6,7 @@
     "ng": "ng",
     "start": "ng serve --extraWebpackConfig webpack.extra.js",
     "dev": "npm start",
-    "build": "ng build zap-elements --extraWebpackConfig webpack.extra.js --stats-json --prod && cat dist/zap-elements/runtime.js dist/zap-elements/scripts.js dist/zap-elements/main.js > lib/zap-bond-widget.js",
+    "build": "ng build zap-elements --extraWebpackConfig webpack.extra.js --stats-json --prod && cat dist/zap-elements/runtime-es2015.js dist/zap-elements/scripts.js dist/zap-elements/main-es2015.js > lib/zap-bond-widget.js",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

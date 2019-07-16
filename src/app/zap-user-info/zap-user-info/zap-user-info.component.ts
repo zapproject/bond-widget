@@ -6,7 +6,7 @@ import { tap } from 'rxjs/operators';
 @Component({
   templateUrl: './zap-user-info.component.html',
   styleUrls: ['./zap-user-info.component.css'],
-  encapsulation: ViewEncapsulation.Emulated
+  encapsulation: ViewEncapsulation.None
 })
 export class ZapUserInfoComponent implements OnInit {
 

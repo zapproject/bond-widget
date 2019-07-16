@@ -6,7 +6,7 @@ import { take } from 'rxjs/operators';
 
 @Component({
   templateUrl: './bond-widget.component.html',
-  encapsulation: ViewEncapsulation.Emulated
+  encapsulation: ViewEncapsulation.None
 })
 export class BondWidgetComponent implements OnChanges {
 

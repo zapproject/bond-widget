@@ -3,7 +3,7 @@ import { Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
 @Component({
   templateUrl: './transaction-info.component.html',
   styleUrls: ['./transaction-info.component.css'],
-  encapsulation: ViewEncapsulation.Emulated
+  encapsulation: ViewEncapsulation.None
 })
 export class TransactionInfoComponent implements OnInit {
 

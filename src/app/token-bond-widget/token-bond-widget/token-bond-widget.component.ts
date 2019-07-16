@@ -10,7 +10,7 @@ import { ProviderService } from 'src/app/provider-service/provider.service';
 @Component({
   templateUrl: './token-bond-widget.component.html',
   styleUrls: ['./token-bond-widget.component.css'],
-  encapsulation: ViewEncapsulation.Emulated
+  encapsulation: ViewEncapsulation.None
 })
 export class TokenBondWidgetComponent implements OnInit {
 

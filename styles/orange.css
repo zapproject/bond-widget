@@ -1,0 +1,202 @@
+ html{
+ }
+.zap-bond-widget, zap-bond-widget{
+	  display: block;
+    padding: 20px 0px 20px 25px;
+    border-radius: 30px;
+    width: 665px;
+    min-height: 330px;
+    background-image: linear-gradient(-0deg, #FF9800, #FFEB3B);
+    box-shadow: 0 5px 20px 0 rgba(0,0,0,0.2), 0 6px 15px 0 #9E9E9E;
+    font-family: 'Roboto', sans-serif !important;
+}
+.zap-endpoint-info, zap-endpoint-info{
+	color: white;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 25px;
+    letter-spacing: 0px;
+}
+.zap-endpoint-info> div:nth-child(2), zap-endpoint-info > div:nth-child(2), .zap-endpoint-info> div:nth-child(1), zap-endpoint-info > div:nth-child(1){
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 7px;
+	color: white;
+}
+zap-endpoint-info> div:nth-child(4), .zap-endpoint-info> div:nth-child(4){
+  width:188px;
+  overflow: hidden;
+}
+fieldset{
+    border: none !important;
+    padding: 10 0 0 0px;
+	}
+input{
+	width:138px;
+    border: none;
+    background-color: white;
+    margin: 0px 0px 10px 0px;
+    padding: 10px 15px;
+    border-radius: 10px;
+	font-size: 18px;
+}
+fieldset > div{
+	font-size: 17px;
+    border: none;
+    color: white;
+    margin: 0px 0px 5px 0px;
+}
+fieldset > button{
+    margin: 15px 27px 5px 0 !important;
+    padding: 10px 15px;
+    height: 65px;
+    vertical-align: bottom;
+    color: #ff8f00;
+    font-size: 17px;
+    width: 138px;
+    border-radius: 10px;
+    background-color: #fff;
+    border-width: 2px;
+    border-color: #ff8f00;
+    border-image: none;
+    border-style: solid;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif !important;
+}
+fieldset > button:hover{
+    margin: 15px 27px 5px 0 !important;
+    height: 65px;
+    vertical-align: bottom;
+    padding: 10px 15px;
+    color: white;
+    font-size: 17px;
+    width: 138px;
+    border-radius: 10px;
+    background-color: #fff0;
+    border-width: 2px;
+    border-color: white;
+    border-image: none;
+    border-style: solid;
+    background-image: linear-gradient(-0deg, #ff8f00, #ff8f00);
+	  cursor: pointer;
+  	font-family: 'Roboto', sans-serif !important;
+
+}
+zap-bond-form > div > p[_ngcontent-c2] {
+	font-size:15px;
+}
+.curve-chart{
+    display: block !important;
+    background-color: #ffffffab;
+    border-color: white;
+    border-style: solid;
+    border-width: 2px;
+    position: absolute;
+    margin-top: -288px;
+    margin-left: 190px;
+    height: 150px;
+    border-radius: 15px;
+    width: 260px;
+    overflow: hidden;
+
+}
+circle{
+    fill: #ff8f00;
+}
+zap-user-info{
+    color: white;
+    font-size: 16px;
+    line-height: 25px;
+	  letter-spacing: 0px;
+	  width: 470px;
+    justify-content: space-between;
+    text-align: left;
+    position: absolute;
+    margin-left: 474px;
+    margin-top: 92px;
+    font-weight: 600;
+
+}
+.curve-string{
+    position: absolute;
+    width: 150px;
+    overflow: hidden;
+    margin-left: 475px;
+    margin-top: -258px;
+    font-weight: 600;
+}
+.curve-values{
+    margin-left: 475px;
+    overflow: hidden;
+    width: 150px;
+    margin-top: -278px;
+    position: absolute;
+    font-weight: 600;
+}
+zap-user-info >div{
+width: 180px;
+text-align: left;
+}
+zap-user-info >div:nth-child(4){
+display: none !important;
+}
+zap-message
+{display: block;
+    position: absolute;
+    padding: 0 !important;
+    margin-bottom: 0 !important;
+    border: none !important;
+    border-radius: .25rem;
+    color: #000000;
+    background-color: #0000003b;
+    margin-left: 240px;
+    margin-top: 30px;
+    max-width: 160px;
+    z-index: 999999;}
+  zap-markdown{
+    width:480px;
+    color: white;
+    overlay:hidden;
+    margin-top: 60px;
+  }
+zap-bond-form > div > p{
+    padding: 3px 8px;
+    color: white !important;
+    background-color: #ff0000a8;
+    position: absolute;
+    font-size: 14px !important;
+    margin-left: auto;
+    border-radius: 20px;
+}
+zap-bond-form > div > p> button{
+    padding: 3px 8px;
+    color: #ff0000a8;
+    background-color: white;
+    font-size: 14px !important;
+    font-weight: 700;
+    border-radius: 20px;
+    border-style: solid !important;
+    border-color: #ff0000a8;
+}
+zap-bond-form > div > p> button:hover{
+    color: white;
+    background-color: #ff0000a8 !important;
+    border-color: white;
+    transition-duration: 0.4s
+}
+zap-curve-chart{
+    color: white;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 25px;
+    letter-spacing: 0px;
+}
+.zap-endpoint-info> div:nth-child(3), zap-endpoint-info > div:nth-child(3){
+    display:none;
+}
+
+
+
+
