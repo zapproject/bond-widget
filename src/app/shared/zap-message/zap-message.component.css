@@ -1,25 +1,30 @@
-:host {
+zap-message {
   display: block;
-  position: relative;
-  padding: .75rem 1.25rem;
   margin-bottom: 1rem;
   border: 1px solid transparent;
   border-radius: .25rem;
+  border-color: #bee5eb;
+  position: absolute;
+  padding: 0;
+  margin-bottom: 0;
+  border: none;
+  border-radius: .25rem;
+  color: #000000;
+  background-color: #0000003b;
+  margin-left: 240px;
+  margin-top: 30px;
+  max-width: 160px;
+  z-index: 999999;
 }
-:host:empty {
+zap-message:empty {
   display: none;
 }
-:host {
-  color: #0c5460;
-  background-color: #d1ecf1;
-  border-color: #bee5eb;
-}
-:host.error {
+zap-message.error {
   color: #721c24;
   background-color: #f8d7da;
   border-color: #f5c6cb;
 }
-:host.success {
+zap-message.success {
   color: #155724;
   background-color: #d4edda;
   border-color: #c3e6cb;

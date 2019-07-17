@@ -1,7 +1,11 @@
 zap-curve-chart {
   display: block;
+	height: 150px;
+	width: 260px;
+	max-width: 260px;
+	min-width: 260px;
+	position: relative;
 }
-
 
 .curve-chart {
 	display: block;
@@ -9,12 +13,12 @@ zap-curve-chart {
 	border-color: white;
 	border-style: solid;
 	border-width: 2px;
-	position: absolute;
-	margin-top: -288px;
-	margin-left: 190px;
-	height: 150px;
+	/* position: absolute; */
+	/* margin-top: -288px; */
+	/* margin-left: 190px; */
+
 	border-radius: 15px;
-	width: 260px;
+
 	overflow: hidden;
 }
 
@@ -23,19 +27,31 @@ zap-curve-chart {
 }
 
 .curve-string {
+	color: #fff;
 	position: absolute;
 	width: 150px;
 	overflow: hidden;
-	margin-left: 475px;
-	margin-top: -258px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	/* margin-left: 475px; */
+	/* margin-top: -258px; */
+	left: 100%;
+	top: 0;
 	font-weight: 600;
+	padding-left: 20px;
 }
 
 .curve-values {
-	margin-left: 475px;
+	color: #fff;
 	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	top: 20px;
 	width: 150px;
-	margin-top: -278px;
+	/* margin-left: 475px; */
+	/* margin-top: -278px; */
+	left: 100%;
 	position: absolute;
+	padding-left: 20px;
 	font-weight: 600;
 }

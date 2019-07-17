@@ -12,7 +12,7 @@ zap-bond-form button {
 
 zap-bond-form fieldset {
 	border: none;
-	padding: 10 0 0 0px;
+	padding: 10px 0 0 0px;
 }
 
 zap-bond-form input {
@@ -33,7 +33,7 @@ zap-bond-form fieldset > div {
 }
 
 zap-bond-form fieldset > button {
-	margin: 15px 27px 5px 0 !important;
+	margin: 15px 27px 5px 0;
 	padding: 10px 15px;
 	height: 65px;
 	vertical-align: bottom;
@@ -49,11 +49,11 @@ zap-bond-form fieldset > button {
 	-webkit-transition-duration: 0.4s;
 	transition-duration: 0.4s;
 	cursor: pointer;
-	font-family: 'Roboto', sans-serif !important;
+	font-family: 'Roboto', sans-serif;
 }
 
 zap-bond-form fieldset > button:hover {
-	margin: 15px 27px 5px 0 !important;
+	margin: 15px 27px 5px 0;
 	height: 65px;
 	vertical-align: bottom;
 	padding: 10px 15px;
@@ -68,7 +68,7 @@ zap-bond-form fieldset > button:hover {
 	border-style: solid;
 	background-image: linear-gradient(var(--button-hover-gradient-direction), var(--button-hover-gradient-start), var(--button-hover-gradient-end));
 	cursor: pointer;
-	font-family: 'Roboto', sans-serif !important;
+	font-family: 'Roboto', sans-serif;
 }
 
 zap-bond-form p {
@@ -76,30 +76,32 @@ zap-bond-form p {
 }
 
 
-zap-bond-form>div>p {
+zap-bond-form > div > p {
 	padding: 3px 8px;
-	color: white !important;
+	color: white;
 	background-color: var(--warn-color);
-	position: absolute;
-	font-size: 14px !important;
+	/* position: absolute; */
+	font-size: 14px;
 	margin-left: auto;
 	border-radius: 20px;
+	display: inline-block;
+	margin: 0;
 }
 
-zap-bond-form>div>p>button {
+zap-bond-form > div > p > button {
 	padding: 3px 8px;
 	color: var(--warn-color);
 	background-color: white;
-	font-size: 14px !important;
+	font-size: 14px;
 	font-weight: 700;
 	border-radius: 20px;
-	border-style: solid !important;
+	border-style: solid;
 	border-color: var(--warn-color);
 }
 
-zap-bond-form>div>p>button:hover {
+zap-bond-form > div > p > button:hover {
 	color: white;
-	background-color: var(--warn-color) !important;
+	background-color: var(--warn-color);
 	border-color: white;
 	transition-duration: 0.4s
 }
