@@ -52,7 +52,9 @@ export class PorviderBondWidgetComponent implements OnInit, OnChanges, OnDestroy
           this.viewData.curvevalues = curve ? JSON.stringify(curve.values) : null;
         })),
         this.zap.getBoundDots(this.address, this.endpoint).pipe(tap(bounddots => { this.viewData.bounddots = bounddots.toString(); })),
-        this.providerService.getDotsIssued(this.address, this.endpoint).pipe(tap(dotsissued => { this.viewData.dotsissued = dotsissued.toString(); })),
+        this.providerService.getDotsIssued(this.address, this.endpoint).pipe(
+          tap(dotsissued => { this.viewData.dotsissued = dotsissued.toString(); })
+        ),
         // this.providerService.getEndpointInfo(provider, this.endpoint).pipe(tap(info => { this.viewData.endpointMd = info.endpointMd; })),
         this.zap.getApproved().pipe(tap(allowance => { this.viewData.allowance = allowance; }))
       )),
