@@ -12,9 +12,10 @@ zap-endpoint-info {
 	font-weight: 600;
 	margin-bottom: 7px;
 	color: white;
+	width: 200px !important;
 }
 
 .zap-endpoint-info__tokenaddress {
-	width: 188px;
+	width: 200px;
 	overflow: hidden;
 }
