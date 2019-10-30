@@ -12,7 +12,7 @@ import { getGasPrice, gas } from '../shared/get-gas-price';
 })
 export class BondService {
 
-  subscriber$: Observable<ZapSubscriber>
+  subscriber$: Observable<ZapSubscriber>;
 
   constructor(private zap: SubscriberService) {
     this.subscriber$ = zap.subscriber$;

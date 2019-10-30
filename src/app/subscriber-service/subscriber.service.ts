@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { SubscriberModule } from './subscriber-service.module';
-import { Observable, from, merge, interval, of, Subject } from 'rxjs';
-import { map, shareReplay, switchMap, filter, share, distinctUntilChanged, catchError } from 'rxjs/operators';
+import { Observable, from, merge, interval, of, Subject, combineLatest } from 'rxjs';
+import { map, shareReplay, switchMap, filter, share, distinctUntilChanged, catchError, withLatestFrom, startWith } from 'rxjs/operators';
 import Web3 from 'web3';
-import { ZapSubscriber, ZapBondage, ZapRegistry, Types } from 'zapjs';
+import { ZapSubscriber, ZapBondage, ZapRegistry, Types, ZapToken } from 'zapjs';
 import { loadSubscriber, getNetworkOptions } from '../shared/utils';
 
 interface AppWindow extends Window {
@@ -20,7 +20,7 @@ export class SubscriberService {
   public web3: Web3;
 
   public account$: Observable<string>;
-  private triggerUpdate = new Subject<void>();
+  private triggerUpdate = new Subject<{type?: 'CUSTOM_TOKEN'; payload?: any}>();
 
   public subscriber$: Observable<ZapSubscriber>;
   public balance$: Observable<any>;
@@ -31,7 +31,8 @@ export class SubscriberService {
 
   constructor() {
     const trigger$ = this.triggerUpdate.asObservable();
-    const interval$ = merge(trigger$, of(1), interval(5000)).pipe(
+
+    const interval$ = merge(trigger$.pipe(filter(action => !action)), of(1), interval(5000)).pipe(
       filter(() => !!this.web3),
       share(),
     );
@@ -39,6 +40,13 @@ export class SubscriberService {
       this.web3 = web3;
       this.triggerUpdate.next();
     });
+
+    const customToken$ = trigger$.pipe(
+      filter(action => action.type === 'CUSTOM_TOKEN'),
+      map(action => action.payload as string),
+      startWith(''),
+      distinctUntilChanged(),
+    );
 
     this.netId$ = interval$.pipe(
       filter(() => !!this.web3),
@@ -55,7 +63,7 @@ export class SubscriberService {
     );
 
     this.account$ = interval$.pipe(
-      switchMap(() => from(this.web3.eth.getAccounts())),
+      switchMap(() => from(this.web3.eth.getAccounts() as string[])),
       map(accounts => accounts && accounts[0] ? accounts[0] : null),
       distinctUntilChanged(),
       shareReplay(1),
@@ -67,8 +75,21 @@ export class SubscriberService {
       switchMap(accountAddress => this.web3.eth.getBalance(accountAddress)),
     );
 
-    this.subscriber$ = this.account$.pipe(
-      switchMap(accountAddress => accountAddress ? loadSubscriber(this.web3, accountAddress) : of(null)),
+    this.subscriber$ = combineLatest([
+      this.account$,
+      this.netId$,
+      customToken$,
+    ]).pipe(
+      map(([accountAddress, netId, customToken]) => {
+        if (!accountAddress) return null;
+        const subscriber = new ZapSubscriber(accountAddress, getNetworkOptions(this.web3, netId));
+        if (customToken) try {
+          subscriber.zapToken = new ZapToken({...getNetworkOptions(this.web3, netId), address: customToken});
+        } catch (e) {
+          console.warn('Invalid custom token address');
+        }
+        return subscriber;
+      }),
       distinctUntilChanged(),
       shareReplay(1),
     );
@@ -77,6 +98,10 @@ export class SubscriberService {
       switchMap(() => this.subscriber$),
       switchMap(subscriber => subscriber ? subscriber.getZapBalance() : of(null)),
     );
+  }
+
+  setCustomToken(address: string) {
+    const token = this.triggerUpdate.next({type: 'CUSTOM_TOKEN', payload: address});
   }
 
   getApproved(address?: string): Observable<string | null> {
