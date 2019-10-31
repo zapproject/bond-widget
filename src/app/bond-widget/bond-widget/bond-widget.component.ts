@@ -12,7 +12,6 @@ export class BondWidgetComponent implements OnChanges, AfterViewInit {
 
   @Input() address: string;
   @Input() endpoint: string;
-  @Input() token: string;
   @Input() theme: ColorThemeName = 'green';
   @Input() interface: 'standard' | 'bond' = 'standard';
 
@@ -41,9 +40,6 @@ export class BondWidgetComponent implements OnChanges, AfterViewInit {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.theme && (changes.theme.firstChange || changes.theme.currentValue !== changes.theme.previousValue)) {
       this.updateTheme();
-    }
-    if (changes.token && changes.token.currentValue !== changes.token.previousValue) {
-      this.zap.setCustomToken(this.token);
     }
     if (!this.endpoint || !this.address) {
       this.widgetType = null;

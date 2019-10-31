@@ -39,6 +39,19 @@ export class ProviderService {
     ); */
   }
 
+  getCurveToken(provider: string, endpoint: string): Observable<string> {
+    if (!provider || !endpoint) return of(null);
+    return this.subscriber.registry$.pipe(
+      switchMap(registry => {
+        return registry.getEndpointToken(provider, endpoint);
+      }),
+      catchError(e => {
+        console.log('getCurveToken', e);
+        return of('0x0');
+      }),
+    );
+  }
+
   getCurve(provider: string, endpoint: string): Observable<Curve> {
     if (!provider || !endpoint) return of(null);
     return this.subscriber.registry$.pipe(

@@ -1,5 +1,5 @@
 import { Component, ViewEncapsulation, Input, OnChanges, ChangeDetectorRef, OnDestroy, OnInit } from '@angular/core';
-import { filter, switchMap, share, map, shareReplay, tap } from 'rxjs/operators';
+import { filter, switchMap, share, map, shareReplay, tap, distinctUntilChanged } from 'rxjs/operators';
 import { Subject, merge, of, Observable, Subscription } from 'rxjs';
 import { BondService } from 'src/app/bond-service/bond.service';
 import { SubscriberService } from 'src/app/subscriber-service/subscriber.service';
@@ -44,8 +44,15 @@ export class PorviderBondWidgetComponent implements OnInit, OnChanges, OnDestroy
   ngOnInit() {
     const change$ = merge(this.change$, of(1));
 
+    const token$ = change$.pipe(
+      switchMap(() => this.providerService.getCurveToken(this.address, this.endpoint)),
+      map(token => token === '0x0' ? '' : token),
+      distinctUntilChanged(),
+      tap(token => this.zap.setCustomToken(token)),
+    );
+
     // const provider$ = change$.pipe(switchMap(() => this.providerService.getProvider(this.address)));
-    this.subscription = change$.pipe(
+    this.subscription = merge(change$, token$).pipe(
       switchMap(provider => merge(
         this.providerService.getTitle(this.address).pipe(tap(title => { this.viewData.title = title; })),
         this.providerService.getCurve(this.address, this.endpoint).pipe(tap(curve => {
