@@ -43,7 +43,7 @@ export class ProviderService {
     if (!provider || !endpoint) return of(null);
     return this.subscriber.registry$.pipe(
       switchMap(registry => {
-        return registry.getEndpointToken(provider, endpoint);
+        return ('getEndpointToken' in registry) ? registry['getEndpointToken'](provider, endpoint) : of('0x0');
       }),
       catchError(e => {
         console.log('getCurveToken', e);
