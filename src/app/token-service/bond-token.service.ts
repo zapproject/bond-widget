@@ -4,7 +4,6 @@ import { ZapSubscriber, Types, TokenDotFactory, Artifacts } from 'zapjs';
 import BigNumber from 'bignumber.js';
 import { Injectable } from '@angular/core';
 import { TokenServiceModule } from './token-service.module';
-import { utf8ToHex } from 'web3-utils';
 import { SubscriberService } from '../subscriber-service/subscriber.service';
 import { getGasPrice, gas } from '../shared/get-gas-price';
 
@@ -24,14 +23,19 @@ export class BondTokenService {
       filter(subscriber => !!subscriber && subscriber instanceof ZapSubscriber),
       switchMap(subscriber => (new Promise((resolve, reject) => {
         getGasPrice().then(gasPrice => {
-          tokenDotFactory.contract.methods.bond(utf8ToHex(endpoint), dots).send({
+          tokenDotFactory.bondTokenDot({
+            endpoint,
+            dots,
             from: subscriber.subscriberOwner,
-            gasPrice,
             gas,
-          })
-            .on('transactionHash', transactionHash => resolve({transactionHash}))
-            .then(resolve)
-            .catch(reject)
+            gasPrice,
+          }, (error, transactionHash) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve({transactionHash});
+            }
+          }).then(resolve).catch(reject);
         })
       }))
         .then(result => ({result, error: null}))
@@ -45,20 +49,35 @@ export class BondTokenService {
       filter(subscriber => !!subscriber && subscriber instanceof ZapSubscriber),
       switchMap(subscriber => (new Promise((resolve, reject) => {
         getGasPrice().then(gasPrice => {
-          tokenDotFactory.contract.methods.unbond(utf8ToHex(endpoint), dots).send({
+          tokenDotFactory.unbondTokenDot({
+            endpoint,
+            dots,
             from: subscriber.subscriberOwner,
             gas,
             gasPrice,
-          })
-            .on('transactionHash', transactionHash => resolve({transactionHash}))
-            .then(resolve)
-            .catch(reject)
+          }, (error, transactionHash) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve({transactionHash});
+            }
+          }).then(resolve).catch(reject);
         });
       }))
         .then(result => ({result, error: null}))
         .catch(error => ({error, result: null}))
       ),
     );
+  }
+
+  getApproved(tokenDotFactory: TokenDotFactory, endpoint: string) {
+    const subscriber$ = merge(of(1), interval(5000)).pipe(switchMap(() => this.subscriber$));
+    const noop$ = subscriber$.pipe(filter(subscriber => !subscriber), map(() => null));
+    const dots$ = subscriber$.pipe(
+      filter(subscriber => !!subscriber && subscriber instanceof ZapSubscriber),
+      switchMap(subscriber => tokenDotFactory.allowance({endpoint, owner: subscriber.subscriberOwner})),
+    );
+    return merge(noop$, dots$);
   }
 
   getDotBalance(tokenDotFactory: TokenDotFactory, endpoint: string) {
@@ -75,46 +94,57 @@ export class BondTokenService {
     return tokenDotFactory.getDotAddress(endpoint).catch(error => '');
   }
 
-  approve(tokenDotFactory: TokenDotFactory, zap: number): Observable<{result: any; error: any}> {
-    const amount = (new BigNumber(zap)).toFixed();
+  approve(tokenDotFactory: TokenDotFactory, zap: number, endpoint: string): Observable<{result: any; error: any}> {
+    const zapNum = (new BigNumber(zap)).toFixed();
     return this.subscriber$.pipe(
       filter(subscriber => !!subscriber && subscriber instanceof ZapSubscriber),
-      switchMap(subscriber => {
-        const approve: Promise<any> = getGasPrice().then(gasPrice => subscriber.zapToken.contract.methods.approve(
-          tokenDotFactory.contract._address, amount,
-        ).send({
-          from: subscriber.subscriberOwner,
-          gas,
-          gasPrice,
-        }));
-        return approve
-          .then(result => ({result, error: null}))
-          .catch(error => ({error, result: null}));
-      }),
+
+      switchMap(subscriber => (new Promise((resolve, reject) => {
+        getGasPrice().then(gasPrice => {
+          tokenDotFactory.approveToBond({
+            endpoint,
+            zapNum,
+            from: subscriber.subscriberOwner,
+            gas,
+            gasPrice,
+          }, (error, transactionHash) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve({transactionHash});
+            }
+          }).then(resolve).catch(reject);
+        });
+      }))
+        .then(result => ({result, error: null}))
+        .catch(error => ({error, result: null}))
+      ),
     );
   }
 
   approveBurn(tokenDotFactory: TokenDotFactory, endpoint: string, dots: number) {
-    const tokenAddressPromise = tokenDotFactory.getDotAddress(endpoint);
-    return from(tokenAddressPromise).pipe(
-      withLatestFrom(this.subscriber$.pipe(filter(subscriber => !!subscriber && subscriber instanceof ZapSubscriber))),
-      switchMap(([tokenAddress, subscriber]) => {
-        const dotToken = new tokenDotFactory.provider.eth.Contract(Artifacts['ZAP_TOKEN'].abi, tokenAddress);
-        return (new Promise((resolve, reject) => {
-          getGasPrice().then(gasPrice => {
-            dotToken.methods.approve(tokenDotFactory.contract._address, dots).send({
-              from: subscriber.subscriberOwner,
-              gas,
-              gasPrice,
-            })
-            .on('transactionHash', transactionHash => resolve({transactionHash}))
-            .then(resolve)
-            .catch(reject)
-          });
-        }))
+
+    return this.subscriber$.pipe(
+      filter(subscriber => !!subscriber && subscriber instanceof ZapSubscriber),
+      switchMap(subscriber => (new Promise((resolve, reject) => {
+        getGasPrice().then(gasPrice => {
+          tokenDotFactory.approveBurnTokenDot({
+            endpoint,
+            from: subscriber.subscriberOwner,
+            gas,
+            gasPrice,
+          }, (error, transactionHash) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve({transactionHash});
+            }
+          }).then(resolve).catch(reject);
+        });
+      }))
         .then(result => ({result, error: null}))
-        .catch(error => ({error, result: null}));
-      }),
+        .catch(error => ({error, result: null}))
+      ),
     );
   }
 }

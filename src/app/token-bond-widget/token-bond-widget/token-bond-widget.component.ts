@@ -93,8 +93,8 @@ export class TokenBondWidgetComponent implements OnInit {
         // this.providerService.getEndpointInfo(provider, this.endpoint).pipe(tap(info => { this.viewData.endpointMd = info.endpointMd; })),
         this.tokenDotFactory$.pipe(
           filter(e => !!e),
-          switchMap(tokenDotFactory => this.zap.getApproved(tokenDotFactory.contract._address)),
-          tap(allowance => { this.viewData.allowance = allowance; }),
+          switchMap(tokenDotFactory => this.bond.getApproved(tokenDotFactory, this.endpoint)),
+          tap(allowance => { this.viewData.allowance = String(allowance); }),
         ),
       )),
       tap(() => { setTimeout(() => { this.cd.detectChanges(); }); }),
@@ -123,7 +123,7 @@ export class TokenBondWidgetComponent implements OnInit {
     const approve$ = action$.pipe(
       filter(({type}) => type === 'APPROVE'),
       tap(() => { this.handleMessage({text: 'Approving...'}); }),
-      switchMap(({payload, tokenDotFactory}) => this.bond.approve(tokenDotFactory, payload)),
+      switchMap(({payload, tokenDotFactory}) => this.bond.approve(tokenDotFactory, payload, this.endpoint)),
       share(),
     );
     const approveBurn$ = action$.pipe(
